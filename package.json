@@ -9,9 +9,9 @@
     "@anikin/parcel-transformer-handlebars": "^1.0.9"
   },
   "scripts": {
-    "dev": "parcel src/pages/index.hbs",
+    "dev": "parcel src/pages/index.hbs --port 3000",
     "build": "parcel build src/pages/index.hbs",
-    "start": "parcel src/pages/index.hbs"
+    "start": "parcel src/pages/index.hbs --port 3000"
   },
   "repository": {
     "type": "git",
