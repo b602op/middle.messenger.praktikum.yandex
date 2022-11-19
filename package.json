@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "parcel src/pages/index.hbs",
-    "build": "parcel build src/pages/index.hbs"
+    "build": "parcel build src/pages/index.hbs",
+    "start": "parcel src/pages/index.hbs"
   },
   "repository": {
     "type": "git",
