@@ -3,5 +3,4 @@
 2) `npm run dev` или `npm run build`
 
 
-ссылка на netlify:
-`https://dynamic-praline-24e400.netlify.app/`
+[ссылка на netlify](https://dynamic-praline-24e400.netlify.app/)
