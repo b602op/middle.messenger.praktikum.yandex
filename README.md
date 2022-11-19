@@ -1,6 +1,6 @@
 запуск проекта:
 1) npm i
-2) `npm run start` или `npm run build`
+2) `npm run dev` или `npm run build`
 
 
 ссылка на netlify:
