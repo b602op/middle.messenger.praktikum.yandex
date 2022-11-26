@@ -1,30 +1,37 @@
 <div style="display: flex; flex-flow: column; width: 100%;">
-    <div style="display: flex; justify-content: center;">аватар</div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">почта:</div>
-        <div style="width: 50%; display: flex; justify-content: center;">почта value</div>
-    </div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">логин</div>
-        <div style="width: 50%; display: flex; justify-content: center;">логин value</div>
-    </div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">имя</div>
-        <div style="width: 50%; display: flex; justify-content: center;">имя value</div>
-    </div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">фамилия</div>
-        <div style="width: 50%; display: flex; justify-content: center;">фамилия value</div>
-    </div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">имя в чате</div>
-        <div style="width: 50%; display: flex; justify-content: center;">имя в чате value</div>
-    </div>
-    <div style="display: flex; justify-content: center;">
-        <div style="width: 50%; display: flex; justify-content: center;">телефон</div>
-        <div style="width: 50%; display: flex; justify-content: center;">телефон value</div>
-    </div>
-    <div style="display: flex; justify-content: center;"><button>изменить охуенные данные</button></div>
-    <div style="display: flex; justify-content: center;"><button>изменить пиздатый пароль</button></div>
-    <div style="display: flex; justify-content: center;"><a href="index.hbs">выйти</a></div>
+    <form style="display: flex; justify-content: center; flex-flow: column; margin: auto;">
+        <div style="width: 50%; display: flex; justify-content: center;">аватар</div>
+        <input style="width: 50%; display: flex; justify-content: center;" name="avatar" value="avatar" />
+    </form>
+    <form>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">почта:</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="email" value="email" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">логин</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="login" value="login" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">имя</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="first_name" value="first_name" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">фамилия</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="first_name" value="first_name" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">имя в чате</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="display_name" value="display_name" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 50%; display: flex; justify-content: center;">телефон</div>
+            <input style="width: 50%; display: flex; justify-content: center;" name="phone" value="phone" />
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button style="display: flex; justify-content: center;">изменить охуенные данные</button>
+            <button style="display: flex; justify-content: center;">изменить пиздатый пароль</button>
+        </div>
+        <button style="display: flex; justify-content: center;"><a href="index.hbs">выйти</a></button>
+    </form>
 </div>
