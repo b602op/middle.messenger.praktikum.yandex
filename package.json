@@ -2,16 +2,21 @@
   "name": "middle.messenger.praktikum.yandex",
   "version": "1.0.0",
   "description": "### Откройте pull request в ветку main из ветки, где вы разрабатывали проект, и добавьте ссылку на этот pr в README.md в ветке main.  ### ВАЖНО: pull request должен называться “Sprint i” (i — номер спринта).",
+  "engine": {
+    "node": "v14.18.1",
+    "npm": "6.14.15"
+  },
   "dependencies": {
     "parcel": "^2.8.0"
   },
   "devDependencies": {
-    "@anikin/parcel-transformer-handlebars": "^1.0.9"
+    "@anikin/parcel-transformer-handlebars": "^1.0.9",
+    "express": "^4.18.2"
   },
   "scripts": {
     "dev": "parcel src/pages/index.hbs --port 3000",
     "build": "parcel build src/pages/index.hbs",
-    "start": "parcel src/pages/index.hbs --port 3000"
+    "start": "npm run build && node ./server.js"
   },
   "repository": {
     "type": "git",
