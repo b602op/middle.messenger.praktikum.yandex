@@ -7,16 +7,16 @@
     "npm": "6.14.15"
   },
   "dependencies": {
-    "parcel": "^2.8.0"
+    "parcel": "2.8.0"
   },
   "devDependencies": {
-    "@anikin/parcel-transformer-handlebars": "^1.0.9",
-    "express": "^4.18.2"
+    "@anikin/parcel-transformer-handlebars": "1.0.9",
+    "express": "4.18.2"
   },
   "scripts": {
-    "dev": "parcel src/pages/index.hbs --port 3000",
+    "dev": "parcel src/pages/index.hbs --no-cache --port 80 --open",
     "build": "parcel build src/pages/index.hbs",
-    "start": "npm run build && node ./server.js"
+    "start": "npm run build && node ./server.js --open"
   },
   "repository": {
     "type": "git",
