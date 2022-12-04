@@ -1,20 +1,39 @@
-<div>
+<main>
     <div style="display: flex; justify-content: center; height: 5%; border-bottom: 1px solid #000;">
         <div style="display: flex; justify-content: center; width: 10%;">
             <button style="height: min-content;"><a href="index.hbs">назад</a></button>
         </div>
         <div style="display: flex; justify-content: center; width: 80%; border-right: 1px solid #000;">
-            охуенный чат
+            <h1>чат</h1>
         </div>
         <div style="display: flex; justify-content: center; width: 10%;">
             <button style="height: min-content;"><a href="user.hbs">user</a></button>
         </div>
     </div>
     <div style="height: 100%; display: flex;">
-        <div style="display: flex; justify-content: center; width: 10%; border-right: 1px solid #000;">пиздатые и охуенные пользователи</div>
+        <div style="display: flex; justify-content: center; width: 10%; border-right: 1px solid #000;">
+            <ul>
+                <li>user1</li>
+                <li>user2</li>
+                <li>user3</li>
+                <li>user4</li>
+            </ul>
+        </div>
         <div style="display: flex; width: 100%; justify-content: center; flex-flow: column;">
-            <div style="display: flex; justify-content: center; height: 90%;">пиздатый чат</div>
-            <div style="display: flex; justify-content: center; height: 10%; border-top: 1px solid #000;">поле для отправки пиздатых сообщений</div>
+            <div style="display: flex; justify-content: center; height: 90%;">
+                <ul>
+                    <li>massage1</li>
+                    <li>massage2</li>
+                    <li>massage3</li>
+                    <li>massage4</li>
+                </ul>
+            </div>
+            <form style="display: flex; justify-content: center; height: 10%; border-top: 1px solid #000;">
+                <lable style="display: flex; flex-flow: column; width: 100%; height: 100%;">
+                    сообщение для отправки
+                    <input style="height: 100%; border: none;" placeholder="введите сообщение" name="massage" />
+                </lable>
+            </form>
         </div>
     </div>
-</div>
+</main>
