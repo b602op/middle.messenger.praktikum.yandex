@@ -8,6 +8,6 @@ app.use("/chats", express.static(__dirname + "/dist"));
 app.use("/login", express.static(__dirname + "/dist"));
 app.use("/registration", express.static(__dirname + "/dist"));
 
-app.listen(process.env.PORT, () => {
+app.listen(80, () => {
     console.log('Server started')
 });

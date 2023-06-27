@@ -1,3 +1,10 @@
+состав проекта:
+шаблонизатор - [Handlebars](https://handlebarsjs.com/)
+стили - [PostCSS](https://postcss.org/)
+сборщик - [Parel](https://ru.parceljs.org/)
+типизатор - [TypeScript](https://www.typescriptlang.org/)
+
+
 запуск проекта:
 1) npm i
 2) `npm run dev` или `npm run build`
