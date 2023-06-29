@@ -3,10 +3,9 @@ import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
 import { type IComponentProps } from "../core/component";
-
-interface ValueType { avatar: string | null };
+import { validationValue } from "./helpers";
 export interface AvatarFormProps extends IComponentProps {
-    value: ValueType;
+    avatar: string | null;
 }
 
 export class AvatarForm extends Component<AvatarFormProps> {
@@ -16,7 +15,7 @@ export class AvatarForm extends Component<AvatarFormProps> {
             children: [
                 new Input({
                     children: "ссылка на аватарку",
-                    value: this.props.value.avatar ?? "",
+                    value: this.props.avatar ?? "",
                     name: "avatar",
                     onChange: this.handleChange.bind(this),
                     placeholder: "url"
@@ -33,13 +32,15 @@ export class AvatarForm extends Component<AvatarFormProps> {
         const target = event.target as HTMLInputElement;
 
         this.setProps({
-            value: { avatar: target.value }
+            avatar: target.value
         });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        console.log(this.props.value, " - Avatar Data");
+        const currentValue = validationValue(this.props.avatar ?? "", "avatar");
+
+        if (currentValue) console.log(currentValue, " - Avatar Data");
     }
 }

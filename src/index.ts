@@ -1,5 +1,14 @@
-import { NavigationPage, LoginPage, Page404, Page500, ProfilePage, ChatPage } from "./pages";
-import { RegistrationPage } from "./pages/registration";
+import {
+    RegistrationPage,
+    NavigationPage,
+    LoginPage,
+    Page404,
+    Page500,
+    ProfilePage,
+    ChatPage,
+    PasswordPage,
+    AvatarPage
+} from "./pages";
 
 export type TPage =
     | NavigationPage
@@ -8,7 +17,9 @@ export type TPage =
     | Page404
     | Page500
     | ProfilePage
-    | ChatPage;
+    | ChatPage
+    | PasswordPage
+    | AvatarPage;
 
 type GetSlugTypes = (value: string) => string;
 
@@ -34,6 +45,10 @@ const getPage = (): TPage => {
             return new ChatPage({});
         case "404":
             return new Page404({});
+        case "password":
+            return new PasswordPage({});
+        case "avatar":
+            return new AvatarPage({});
         default:
             return new Page500({});
     }

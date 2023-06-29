@@ -3,18 +3,19 @@ import { Component } from "../core";
 import { type IComponentProps } from "../core/component";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
+import { validationValue } from "./helpers";
 
-interface ValueType {
+export interface RegistrationFormFields {
     email: string | null;
     login: string | null;
-    name: string | null;
-    second_name: string | null;
+    firstName: string | null;
+    secondName: string | null;
     phone: string | null;
     password: string | null;
 };
 
 export interface RegistrationFormProps extends IComponentProps {
-    value: ValueType;
+    value: RegistrationFormFields;
 }
 
 export class RegistrationForm extends Component<RegistrationFormProps> {
@@ -38,16 +39,16 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                 }),
                 new Input({
                     children: "Имя",
-                    value: this.props.value.name ?? "",
-                    name: "name",
-                    onChange: this.handleChange.bind(this, "name"),
+                    value: this.props.value.firstName ?? "",
+                    name: "first_name",
+                    onChange: this.handleChange.bind(this, "firstName"),
                     placeholder: "Имя"
                 }),
                 new Input({
                     children: "Фамилия",
-                    value: this.props.value.second_name ?? "",
+                    value: this.props.value.secondName ?? "",
                     name: "second_name",
-                    onChange: this.handleChange.bind(this, "second_name"),
+                    onChange: this.handleChange.bind(this, "secondName"),
                     placeholder: "Фамилия"
                 }),
                 new Input({
@@ -82,14 +83,27 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
     protected handleCheck(event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        console.log(target.value, " - password check");
-    }
+        if (target.value === this.props.value.password) {
+            console.log("повторный пароль корректен");
+            return;
+        }
 
-    protected handleChange(key: keyof ValueType, event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
+        console.log("повторный пароль не корректен");
+
+        target.value = "";
 
         this.setProps({
-            value: { ...this.props.value, [key]: target.value }
+            value: { ...this.props.value, password: null }
+        });
+    }
+
+    protected handleChange(key: keyof RegistrationFormFields, event: InputEvent): void {
+        const target = event.target as HTMLInputElement;
+
+        const currentValue = validationValue(target.value, key);
+
+        this.setProps({
+            value: { ...this.props.value, [key]: currentValue }
         });
     }
 

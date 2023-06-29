@@ -3,14 +3,15 @@ import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
 import { type IComponentProps } from "../core/component";
+import { validationValue } from "./helpers";
 
-interface ValueType {
+export interface PasswordFormFields {
     password: string | null;
     newPassword: string | null;
 };
 
 export interface PasswordFormProps extends IComponentProps {
-    value: ValueType;
+    value: PasswordFormFields;
 }
 
 export class PasswordForm extends Component<PasswordFormProps> {
@@ -35,7 +36,7 @@ export class PasswordForm extends Component<PasswordFormProps> {
                 new Input({
                     children: "пароль (ещё раз)",
                     value: "",
-                    name: "password",
+                    name: "newPassword2",
                     onChange: this.handleCheck.bind(this),
                     placeholder: "новый пароль"
                 }),
@@ -50,14 +51,33 @@ export class PasswordForm extends Component<PasswordFormProps> {
     protected handleCheck(event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        console.log(target.value, " - password check");
-    }
+        const isRepeated = target.value === this.props.value.password;
 
-    protected handleChange(key: keyof ValueType, event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
+        if (!isRepeated && (target.value === this.props.value.newPassword)) {
+            console.log("повторный пароль корректен");
+            return;
+        }
+
+        if (isRepeated) {
+            console.log("придумайте другой пароль");
+        } else {
+            console.log("повторный пароль не корректен");
+        }
+
+        target.value = "";
 
         this.setProps({
-            value: { ...this.props.value, [key]: target.value }
+            value: { ...this.props.value, newPassword: null }
+        });
+    }
+
+    protected handleChange(key: keyof PasswordFormFields, event: InputEvent): void {
+        const target = event.target as HTMLInputElement;
+
+        const currentValue = validationValue(target.value, key);
+
+        this.setProps({
+            value: { ...this.props.value, [key]: currentValue }
         });
     }
 

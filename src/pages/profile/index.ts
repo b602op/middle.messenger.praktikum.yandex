@@ -1,4 +1,5 @@
 import { Info } from "../../components/blocks/Info";
+import { Container } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
 import { Component, Page } from "../../components/core";
 import { UserForm } from "../../components/forms/UserForm";
@@ -11,30 +12,44 @@ export class ProfilePage extends Component {
                     children: "изменение данных",
                     tag: "h1"
                 }),
-                new UserForm({
-                    value: {
-                        email: null,
-                        login: null,
-                        name: null,
-                        displayName: null,
-                        secondName: null,
-                        phone: null,
-                        password: null
-                    }
-                }),
-                new Button({
-                    onclick: this.handleToChangePassword.bind(this),
-                    children: "изменить пароль"
+                new Container({
+                    children: [
+                        new UserForm({
+                            value: {
+                                email: null,
+                                login: null,
+                                name: null,
+                                displayName: null,
+                                secondName: null,
+                                phone: null,
+                                password: null
+                            }
+                        }),
+                        new Container({
+                            children: [
+                                new Button({
+                                    onclick: this.handleToChangePassword.bind(this),
+                                    children: "изменить пароль"
+                                }),
+                                new Button({
+                                    onclick: this.handleToChangeAvatar.bind(this),
+                                    children: "изменить аватар"
+                                }),
+                                new Button({
+                                    onclick: this.handleCancel.bind(this),
+                                    children: "выйти"
+                                })
+                            ]
+                        })
+                    ],
+                    className: "profile-container"
                 }),
                 new Button({
                     onclick: this.handleCancel.bind(this),
                     children: "назад",
                     className: "back"
-                }),
-                new Button({
-                    onclick: this.handleCancel.bind(this),
-                    children: "выйти"
                 })
+
             ]
         });
     }
@@ -49,5 +64,11 @@ export class ProfilePage extends Component {
         event.preventDefault();
 
         window.location.href = "/password";
+    }
+
+    private handleToChangeAvatar(event: SubmitEvent): void {
+        event.preventDefault();
+
+        window.location.href = "/avatar";
     }
 }

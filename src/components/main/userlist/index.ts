@@ -24,7 +24,11 @@ export class UserList extends Component<ChatProps> {
                         ...this.props.value.map(({ name, imageUrl, active }) => {
                             const className = active ? "user-chat-item-active" : "user-chat-item";
 
-                            return new Button({ children: name, className });
+                            return new Button({
+                                children: name,
+                                className,
+                                onclick: this.handleChange.bind(this, name)
+                            });
                         })
                     ],
                     className: "user-chat-items"
@@ -32,5 +36,13 @@ export class UserList extends Component<ChatProps> {
             ],
             className: "chat"
         });
+    }
+
+    protected handleChange(newNameActive: string, event: InputEvent): void {
+        event.preventDefault();
+
+        const newValue = this.props.value.map((item) => ({ ...item, active: item.name === newNameActive }));
+
+        this.setProps({ value: newValue });
     }
 }
