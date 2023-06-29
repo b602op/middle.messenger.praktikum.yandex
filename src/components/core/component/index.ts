@@ -30,11 +30,11 @@ export const cloneDeep = <T>(value: T): T | T[] | Record<string | number | symbo
     return value;
 };
 
-export const isComponentOrComponentArray = (arg: unknown): arg is TComponentOrComponentArray => {
+export const isComponentOrComponentArray = (arg: unknown): arg is Component | Component[] => {
     return arg instanceof Component || (Array.isArray(arg) && arg.filter(identity).every(el => el instanceof Component));
 };
 
-export const isEventListenerOrEventListenerArray = (key: string, arg: unknown): arg is TEventListenerOrEventListenerArray => {
+export const isEventListenerOrEventListenerArray = (key: string, arg: unknown): arg is EventListener | EventListener[] => {
     return key.startsWith("on") && (typeof arg === "function" || (Array.isArray(arg) && arg.every(el => typeof el === "function")));
 };
 
@@ -44,23 +44,25 @@ export const isPseudoClass = (key: string, arg: unknown): arg is boolean => {
     return pseudoClasses.includes(key) && typeof arg === "boolean";
 };
 
-type IComponentProps = any;
-type TComponentOrComponentArray = any;
-type TEventListenerOrEventListenerArray = any;
-type TComponentRecord = any;
-type TEventListenerRecord = any;
+type TComponentChild = Component | string | number | boolean | undefined | null;
+
+export interface IComponentProps {
+    id?: string;
+    children?: TComponentChild | TComponentChild[];
+    className?: string;
+}
 
 export class Component<P extends Record<string, any> = IComponentProps> {
     private _template: HTMLTemplateElement;
     protected eventBus: EventBus;
-    private _components: TComponentRecord;
-    private _listeners: TEventListenerRecord;
+    private _components: Record<string, Component | Component[]>;
+    private _listeners: Record<string, EventListener | EventListener[]>;
     private _pseudoClasses: Record<string, boolean>;
 
-    constructor(protected props: P = {} as any, protected templateDelegate: TemplateDelegate | undefined = undefined) {
+    constructor(protected props: P, protected templateDelegate: TemplateDelegate | undefined = undefined) {
         this.props = this._makePropsProxy({
             ...props,
-            id: props.id ?? makeUUID()
+            id: props?.id ?? makeUUID()
         });
         this.templateDelegate = templateDelegate ?? compile("{{{ children }}}");
         this.eventBus = new EventBus();
@@ -101,12 +103,12 @@ export class Component<P extends Record<string, any> = IComponentProps> {
     }
 
     protected getComponentsAndListeners<T extends Record<string, any> = IComponentProps>(context: T): {
-        components: TComponentRecord;
-        listeners: TEventListenerRecord;
+        components: Record<string, Component | Component[]>;
+        listeners: Record<string, EventListener | EventListener[]>;
         pseudoClasses: Record<string, boolean>;
     } {
-        const components: TComponentRecord = {};
-        const listeners: TEventListenerRecord = {};
+        const components: Record<string, Component | Component[]> = {};
+        const listeners: Record<string, EventListener | EventListener[]> = {};
         const pseudoClasses: Record<string, boolean> = {};
         Object.keys(context).forEach((key) => {
             if (isComponentOrComponentArray(context[key])) {
@@ -130,7 +132,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
                             this._removeAllEventListeners(component);
                         }
                     )
-                    : this._removeAllEventListeners(componentOrComponentArray as Component);
+                    : this._removeAllEventListeners(componentOrComponentArray);
             }
         );
     }
@@ -145,7 +147,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
                             this._addAllEventListeners(component);
                         }
                     )
-                    : this._addAllEventListeners(componentOrComponentArray as Component);
+                    : this._addAllEventListeners(componentOrComponentArray);
             }
         );
     }
@@ -160,7 +162,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
                             this._applyAllPseudoClasses(component);
                         }
                     )
-                    : this._applyAllPseudoClasses(componentOrComponentArray as Component);
+                    : this._applyAllPseudoClasses(componentOrComponentArray);
             }
         );
     }
@@ -194,7 +196,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
                 ? val.filter(identity).map(
                     component => this._renderStub(component)
                 ).join("")
-                : this._renderStub(val as Component);
+                : this._renderStub(val);
         });
 
         if (this.templateDelegate) {
@@ -273,12 +275,12 @@ export class Component<P extends Record<string, any> = IComponentProps> {
 
     private _getFragmentChildId(): string | undefined {
         if (!Array.isArray(this._components?.children)) {
-            const props = this._components?.children.props as { id: string };
+            const props = this._components?.children.props;
             return props?.id;
         }
     }
 
-    protected render(): TComponentOrComponentArray {
+    protected render(): Component | Component[] {
         return this.props.children;
     }
 
@@ -296,7 +298,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
         }
     }
 
-    private _removeEventListeners(listeners: TEventListenerRecord): void {
+    private _removeEventListeners(listeners: Record<string, EventListener | EventListener[]>): void {
         const element = document.getElementById(this.props.id);
         Object.entries(listeners).forEach(
             ([key, val]) => {
@@ -309,7 +311,7 @@ export class Component<P extends Record<string, any> = IComponentProps> {
         );
     }
 
-    private _addEventListeners(listeners: TEventListenerRecord): void {
+    private _addEventListeners(listeners: Record<string, EventListener | EventListener[]>): void {
         const element = document.getElementById(this.props.id);
         Object.entries(listeners).forEach(
             ([key, val]) => {

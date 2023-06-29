@@ -1,47 +1,52 @@
-import { Component, Page } from "../core";
+import { Component } from "../core";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
+import { Form, FormMethod } from "./Form";
+import { type IComponentProps } from "../core/component";
 
-export class AuthorizationForm extends Component {
+interface ValueType { login: string | null; password: string | null };
+export interface AuthorizationFormProps extends IComponentProps {
+    value: ValueType;
+}
+
+export class AuthorizationForm extends Component<AuthorizationFormProps> {
     protected render(): Component | Component[] {
-        return new Page({
+        return new Form({
+            method: FormMethod.post,
             children: [
                 new Input({
-                    onChange: () => { console.log("логин"); },
                     children: "логин",
-                    value: "login",
-                    name: "login"
+                    value: this.props.value.login ?? "",
+                    name: "login",
+                    onChange: this.handleChange.bind(this, "login"),
+                    placeholder: "login"
                 }),
                 new Input({
-                    onChange: () => { console.log("пароль"); },
                     children: "пароль",
-                    value: "password",
-                    name: "password"
+                    value: this.props.value.password ?? "",
+                    name: "password",
+                    onChange: this.handleChange.bind(this, "password"),
+                    placeholder: "password"
                 }),
                 new Button({
-                    onclick: () => { console.log("войти"); },
+                    onclick: this.handleFormSubmit.bind(this),
                     children: "войти"
-                }),
-                new Button({
-                    onclick: () => { console.log("регистрация"); },
-                    children: "регистрация"
-                }),
-                new Button({
-                    onclick: () => { console.log("назад"); },
-                    children: "назад"
                 })
             ]
         });
     }
 
+    protected handleChange(key: keyof ValueType, event: InputEvent): void {
+        const target = event.target as HTMLInputElement;
+
+        this.setProps({
+            value: { ...this.props.value, [key]: target.value }
+        });
+    }
+
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
-        const form = event.target as HTMLFormElement;
-        const formData = new FormData(form);
-        formData.forEach(
-            (value, key) => {
-                console.log(key, value);
-            }
-        );
+
+        console.log(this.props.value, " - Authorization Data");
     }
 }

@@ -1,30 +1,43 @@
-import { NavigationPage, LoginPage } from "./pages";
+import { NavigationPage, LoginPage, Page404, Page500, ProfilePage, ChatPage } from "./pages";
+import { RegistrationPage } from "./pages/registration";
 
-export type TPage = any;
+export type TPage =
+    | NavigationPage
+    | LoginPage
+    | RegistrationPage
+    | Page404
+    | Page500
+    | ProfilePage
+    | ChatPage;
 
-const getPage = (): TPage => {
-    switch (location.pathname) {
-        case "/":
-            return new NavigationPage();
-        case "/login/":
-            return new LoginPage();
-        // case "/registration/":
-        //     return new RegistrationPage();
-        // case "/chats/":
-        //     return new ChatsPage();
-        // case "/profile/":
-        //     return new ProfilePage();
-        // case "/not-found/":
-        //     return new NotFoundPage();
-        // case "/server-error/":
-        //     return new ServerErrorPage();
-        // default:
-        //     return new NotFoundPage();
-    }
+type GetSlugTypes = (value: string) => string;
+
+const getSlug: GetSlugTypes = (url: string) => {
+    const newUrl = url.replace("/", "");
+
+    if (url.match("/")) return getSlug(newUrl);
+
+    return newUrl;
 };
 
-// document.body.prepend(new Header().getContent());
-// document.body.appendChild(new Footer().getContent());
+const getPage = (): TPage => {
+    switch (getSlug(location.pathname)) {
+        case "":
+            return new NavigationPage({});
+        case "login":
+            return new LoginPage({});
+        case "registration":
+            return new RegistrationPage({});
+        case "profile":
+            return new ProfilePage({});
+        case "chat":
+            return new ChatPage({});
+        case "404":
+            return new Page404({});
+        default:
+            return new Page500({});
+    }
+};
 
 document.getElementById("root")?.replaceWith(
     getPage().getContent()

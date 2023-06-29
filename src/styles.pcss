@@ -1,50 +1,33 @@
 @import url("./components/styles.pcss");
-@import url("./pages/styles.pcss");
-@import url("./icons/styles.pcss");
-
-@font-face {
-    font-family: "JetBrains Mono";
-    src: url("/static/fonts/JetBrainsMono-Regular.woff2") format("woff2");
-}
-
-:root {
-    --color-white: rgb(255 255 255);
-    --color-black: rgb(16 24 40);
-    --color-primary1: rgb(43 69 38);
-    --color-primary2: rgb(135 117 108);
-    --color-secondary1: rgb(129 158 123);
-    --color-secondary2: rgb(232 219 202);
-    --color-light: rgba(235 233 234 / 25%);
-    --color-black-alpha5: rgb(16 24 40 / 5%);
-    --color-primary1-alpha5: rgb(43 69 38 / 5%);
-    --color-primary2-alpha5: rgb(135 117 108 / 5%);
-    --color-secondary1-alpha5: rgb(129 158 123 / 5%);
-    --color-secondary2-alpha5: rgb(232 219 202 / 5%);
-    --color-black-alpha10: rgb(16 24 40 / 10%);
-    --color-primary1-alpha10: rgb(43 69 38 / 10%);
-    --color-primary2-alpha10: rgb(135 117 108 / 10%);
-    --color-secondary1-alpha10: rgb(129 158 123 / 10%);
-    --color-secondary2-alpha10: rgb(232 219 202 / 10%);
-    --color-black-alpha70: rgb(16 24 40 / 70%);
-    --color-primary1-alpha70: rgb(43 69 38 / 70%);
-    --color-primary2-alpha70: rgb(135 117 108 / 70%);
-    --color-secondary1-alpha70: rgb(129 158 123 / 70%);
-    --color-secondary2-alpha70: rgb(232 219 202 / 70%);
-    --color-error: rgb(255 12 12 / 80%);
-}
 
 * {
-    font-family: "JetBrains Mono", serif;
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
+main {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    background-color: var(--color-white);
+    flex-flow: column;
+    align-items: center;
+}
+
+button {
+    width: 100px;
+    background: green;
+    color: #FFF;
+    border: 1px solid #009a00;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+}
+
+button.back {
+    background: #b9b900;
+    border: 1px solid #fff100;
+}
+
+.chat-content {
+    display: flex;
+    flex-flow: row;
 }

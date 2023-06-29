@@ -1,37 +1,38 @@
-// import { BoxAlignItems, BoxJustifyContent } from "../../components/box/types";
-
 import { Nav, NavLink } from "../../components/blocks";
+import { Info } from "../../components/blocks/Info";
 import { Component, Page } from "../../components/core";
-
-// import type { TComponentOrComponentArray } from "../../core/component/types";
 
 export class NavigationPage extends Component {
     protected render(): Component | Component[] {
         return new Page({
             children: new Nav({
                 children: [
+                    new Info({
+                        children: "навигация",
+                        tag: "h1"
+                    }),
                     new NavLink({
-                        href: "/login/",
+                        href: "/login",
                         children: "Авторизация"
                     }),
                     new NavLink({
-                        href: "/registration/",
+                        href: "/registration",
                         children: "Регистрация"
                     }),
                     new NavLink({
-                        href: "/chats/",
-                        children: "Страница чатов"
+                        href: "/chat",
+                        children: "Страница чата"
                     }),
                     new NavLink({
-                        href: "/profile/",
+                        href: "/profile",
                         children: "Профиль пользователя"
                     }),
                     new NavLink({
-                        href: "/not-found/",
+                        href: "/404",
                         children: "Ошибка 404"
                     }),
                     new NavLink({
-                        href: "/server-error/",
+                        href: "/500",
                         children: "Ошибка 500"
                     })
                 ]

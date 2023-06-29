@@ -1,11 +1,11 @@
 import Handlebars from "handlebars";
 
 import { Component } from "../../core";
+import { type IComponentProps } from "../../core/component";
 
-interface PageProps {
+interface PageProps extends IComponentProps {
     id?: string;
     className?: string;
-    children: any;
 };
 
 export class Page extends Component<PageProps> {

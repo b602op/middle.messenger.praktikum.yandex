@@ -3,12 +3,12 @@ import { Button } from "../../components/buttons";
 import { Component, Page } from "../../components/core";
 import { AuthorizationForm } from "../../components/forms/AuthorizationForm";
 
-export class LoginPage extends Component {
+export class Avatar extends Component {
     protected render(): Component | Component[] {
         return new Page({
             children: [
                 new Info({
-                    children: "авторизация",
+                    children: "смена аватара",
                     tag: "h1"
                 }),
                 new AuthorizationForm({ value: { login: null, password: null } }),
@@ -18,8 +18,7 @@ export class LoginPage extends Component {
                 }),
                 new Button({
                     onclick: this.handleCancel.bind(this),
-                    children: "назад",
-                    className: "back"
+                    children: "назад"
                 })
             ]
         });
