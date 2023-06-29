@@ -1,4 +1,3 @@
-import { Info } from "../../blocks/Info";
 import { Container } from "../../blocks/container";
 import { Button } from "../../buttons";
 import { Component } from "../../core";
@@ -33,17 +32,5 @@ export class UserList extends Component<ChatProps> {
             ],
             className: "chat"
         });
-    }
-
-    private handleCancel(event: SubmitEvent): void {
-        event.preventDefault();
-
-        window.location.href = "/";
-    }
-
-    private handleToRegistration(event: SubmitEvent): void {
-        event.preventDefault();
-
-        window.location.href = "/registration";
     }
 }
