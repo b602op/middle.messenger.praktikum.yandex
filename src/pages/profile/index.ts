@@ -16,7 +16,8 @@ export class ProfilePage extends Component {
                         email: null,
                         login: null,
                         name: null,
-                        second_name: null,
+                        displayName: null,
+                        secondName: null,
                         phone: null,
                         password: null
                     }

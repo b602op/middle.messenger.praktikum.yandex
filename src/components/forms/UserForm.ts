@@ -8,7 +8,8 @@ interface ValueType {
     email: string | null;
     login: string | null;
     name: string | null;
-    second_name: string | null;
+    displayName: string | null;
+    secondName: string | null;
     phone: string | null;
     password: string | null;
 };
@@ -44,8 +45,15 @@ export class UserForm extends Component<UserFormProps> {
                     placeholder: "Имя"
                 }),
                 new Input({
+                    children: "Имя",
+                    value: this.props.value.displayName ?? "",
+                    name: "display_name",
+                    onChange: this.handleChange.bind(this, "name"),
+                    placeholder: "Имя в чате"
+                }),
+                new Input({
                     children: "Фамилия",
-                    value: this.props.value.second_name ?? "",
+                    value: this.props.value.secondName ?? "",
                     name: "second_name",
                     onChange: this.handleChange.bind(this, "second_name"),
                     placeholder: "Фамилия"
