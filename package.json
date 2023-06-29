@@ -9,9 +9,6 @@
     "eslint": "npx eslint .",
     "stylelint": "npx stylelint \"**/*.pcss\""
   },
-  "engines" : {
-    "node" : ">=12"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
