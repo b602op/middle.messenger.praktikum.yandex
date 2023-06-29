@@ -3,12 +3,12 @@
     padding: 10px;
     display: flex;
     flex-flow: column;
-    background: #c0c0c0;
-    border-left: 1px solid #FFF;
+    background: var(--gray);
+    border-left: 1px solid var(--white);
 
     .chat-item-self {
         display: flex;
-        background: #e5e8ff;
+        background: var(--blue-light);
         border-radius: 6px;
         padding: 6px;
         margin: 5px 5px 5px 200px;
@@ -17,8 +17,8 @@
 
     .chat-item-noself {
         display: flex;
-        background: #0417ab;
-        color: #FFF;
+        background: var(--blue);
+        color: var(--white);
         border-radius: 6px;
         padding: 6px;
         margin: 5px 200px 5px 5px;
@@ -38,11 +38,10 @@
     justify-content: center;
     padding-top: 10px;
     margin-top: 10px;
-    border-top: 1px solid #FFF;
+    border-top: 1px solid var(--white);
 
     label {
         width: 100%;
-        
     }
 
     input {

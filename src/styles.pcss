@@ -1,5 +1,17 @@
 @import url("./components/styles.pcss");
 
+:root {
+    --green: #10b910;
+    --green-light: #47ff47;
+    --white: #f2f2f2;
+    --yellow: #b9b900;
+    --yellow-light: #fff100;
+    --black: #1e201e;
+    --blue: #536eff;
+    --blue-light: #b2beff;
+    --gray: #b0b0b0;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -13,9 +25,9 @@ main {
 
 button {
     width: 100px;
-    background: green;
-    color: #FFF;
-    border: 1px solid #009a00;
+    background: var(--green);
+    color: var(--white);
+    border: 1px solid var(--green-light);
     margin: 10px;
     display: flex;
     justify-content: center;
@@ -23,8 +35,8 @@ button {
 }
 
 button.back {
-    background: #b9b900;
-    border: 1px solid #fff100;
+    background: var(--yellow);
+    border: 1px solid var(--yellow-light)
 }
 
 .chat-content {
