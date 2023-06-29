@@ -11,6 +11,6 @@ app.use("/registration", express.static(__dirname + "/dist"));
 app.use("/404", express.static(__dirname + "/dist"));
 app.use("/500", express.static(__dirname + "/dist"));
 
-app.listen(80, () => {
+app.listen(port, () => {
     console.log('Server started')
 });
