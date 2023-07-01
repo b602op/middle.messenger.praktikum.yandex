@@ -24,6 +24,6 @@ export class PasswordPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        window.location.href = "/profile";
     }
 }

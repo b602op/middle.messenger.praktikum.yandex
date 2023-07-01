@@ -5,7 +5,7 @@ import { type AvatarFormProps } from "../AvatarForm";
 
 type FieldType = keyof RegistrationFormFields | keyof MessageFormProps | keyof PasswordFormFields | keyof AvatarFormProps;
 
-type validationValueType = (value: string, type: FieldType) => string | null;
+type validationValueType = (value: string | null, type: FieldType) => [boolean, string | null];
 
 const emailReg = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
 
@@ -17,71 +17,69 @@ export const validationValue: validationValueType = (value, type) => {
     switch (type) {
         case "firstName":
         case "secondName": {
+            if (!value) return [true, "заполните поле"];
+
             const firstLatter = value[0];
 
-            if (firstLatter === firstLatter.toLocaleUpperCase()) return value;
+            if (firstLatter === firstLatter.toLocaleUpperCase()) return [false, value];
 
-            console.error("напишите свою фамилию и имя с большой буквы");
-
-            return null;
+            return [true, "напишите свою фамилию и имя с большой буквы"];
         }
         case "login": {
+            if (!value) return [true, "заполните поле"];
+
             const valueLength = value.length;
 
-            if (valueLength >= 3 && valueLength <= 20) return value;
+            if (valueLength >= 3 && valueLength <= 20) return [false, value];
 
-            console.error("Придумайте логин от 3 до 20 символов включительно");
-
-            return null;
+            return [true, "Логин должен быть от 3 до 20 символов включительно"];
         }
         case "email": {
-            if (emailReg.test(value)) return value;
+            if (!value) return [true, "заполните поле"];
 
-            console.error("Введите корректный e-mail");
+            if (emailReg.test(value)) return [false, value];
 
-            return null;
+            return [true, "Введите корректный e-mail"];
         }
         case "newPassword":
         case "password": {
+            if (!value) return [true, "заполните поле"];
+
             const valueLength = value.length;
 
             const isLengthEnough = valueLength >= 8 && valueLength <= 40;
 
             const correctPassord = passReg.test(value);
 
-            if (correctPassord && isLengthEnough) return value;
+            if (correctPassord && isLengthEnough) return [false, value];
 
-            console.error("Пароль от 8 до 40 символов, обязательно хотя бы одна заглавная буква и цифра");
-
-            return null;
+            return [true, "Пароль от 8 до 40 символов, обязательно хотя бы одна заглавная буква и цифра"];
         }
         case "phone": {
+            if (!value) return [true, "заполните поле"];
+
             const correctPassord = phoneReg.test(value);
 
-            if (correctPassord) return value;
+            if (correctPassord) return [false, value];
 
-            console.error("Телефон от 10 до 15 символов, состоит из цифр, может начинается с плюса");
-
-            return null;
+            return [true, "Телефон от 10 до 15 символов, состоит из цифр, может начинается с плюса"];
         }
         case "message": {
-            if (!value) {
-                console.error("напишите сообщение");
+            if (!value) return [true, "напишите сообщение"];
 
-                return null;
-            }
-            return value;
+            return [false, value];
         }
         case "avatar": {
-            if (!value) {
-                console.error("укажите ссылку на аватар");
+            if (!value) return [true, "укажите ссылку на аватар"];
+            return [false, value];
+        }
+        case "displayName": {
+            if (!value) return [true, "укажите имя в чате"];
 
-                return null;
-            }
-            return value;
+            return [false, value];
         }
         default: {
-            return value;
+            return [false, value];
         }
     }
 };
