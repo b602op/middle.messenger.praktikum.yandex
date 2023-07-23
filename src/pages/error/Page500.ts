@@ -1,6 +1,7 @@
-import { Component, Page } from "../../components/core";
 import { Button } from "../../components/buttons";
 import { Info } from "../../components/blocks/Info";
+import { Component } from "../../core";
+import { Page } from "../../components/main/page";
 
 export class Page500 extends Component {
     protected render(): Component | Component[] {

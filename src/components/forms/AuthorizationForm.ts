@@ -1,14 +1,13 @@
-import { Component } from "../core";
+import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { type IComponentProps } from "../core/component";
 import { validationValue } from "./helpers";
 
 interface AuthorizationFormFields { login: string | null; password: string | null };
 export interface AuthorizationFormProps extends IComponentProps {
     value: AuthorizationFormFields;
-    errors: Record<string, string | null>;
+    errors?: Record<string, string | null>;
 }
 
 export class AuthorizationForm extends Component<AuthorizationFormProps> {

@@ -1,6 +1,7 @@
 import { Nav, NavLink } from "../../components/blocks";
 import { Info } from "../../components/blocks/Info";
-import { Component, Page } from "../../components/core";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
 
 export class NavigationPage extends Component {
     protected render(): Component | Component[] {

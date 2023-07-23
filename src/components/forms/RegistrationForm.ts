@@ -1,9 +1,9 @@
+import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
-import { Component } from "../core";
-import { type IComponentProps } from "../core/component";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
 import { validationValue } from "./helpers";
+import AuthController from "../../controllers/AuthController";
 
 export interface RegistrationFormFields {
     name: string | null;
@@ -166,6 +166,10 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
             errors: this.props.password2 ? newErrors : { ...newErrors, password: "пароли не совпадают" }
         });
 
-        console.log(this.props.value, " - Registration Data");
+        const data = this.props.value;
+
+        console.log(data, " - Registration Data");
+
+        AuthController.signup(data);
     }
 }

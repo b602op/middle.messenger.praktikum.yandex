@@ -1,18 +1,17 @@
-import { Component } from "../core";
+import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { type IComponentProps } from "../core/component";
 import { validationValue } from "./helpers";
 
 export interface PasswordFormFields {
-    password: string | null;
-    newPassword: string | null;
+    password?: string | null;
+    newPassword?: string | null;
 };
 
 export interface PasswordFormProps extends IComponentProps {
     value: PasswordFormFields;
-    errors: Record<keyof PasswordFormFields, string | null>;
+    errors: Record<keyof PasswordFormFields, string | null | undefined>;
     newPassword2: string | null;
 }
 
@@ -40,7 +39,7 @@ export class PasswordForm extends Component<PasswordFormProps> {
                     name: "password",
                     onChange: this.handleChange.bind(this, "password"),
                     placeholder: "текущий пароль",
-                    error: this.props.errors.password
+                    error: this.props.errors?.password
                 }),
                 new Input({
                     children: "пароль",
@@ -48,7 +47,7 @@ export class PasswordForm extends Component<PasswordFormProps> {
                     name: "newPassword",
                     onChange: this.handleChange.bind(this, "newPassword"),
                     placeholder: "новый пароль",
-                    error: this.props.errors.newPassword
+                    error: this.props.errors?.newPassword
                 }),
                 new Input({
                     children: "пароль (ещё раз)",
@@ -81,7 +80,7 @@ export class PasswordForm extends Component<PasswordFormProps> {
             return;
         }
 
-        let passwordError = "";
+        let passwordError;
 
         if (isRepeated) {
             passwordError = "придумайте другой пароль";

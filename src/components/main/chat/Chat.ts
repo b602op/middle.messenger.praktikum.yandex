@@ -1,7 +1,6 @@
+import { Component, type IComponentProps } from "../../../core/component";
 import { Info } from "../../blocks/Info";
 import { Container } from "../../blocks/container";
-import { Component } from "../../core";
-import { type IComponentProps } from "../../core/component";
 import { MessageForm } from "../../forms";
 
 interface ChatProps extends IComponentProps {

@@ -1,7 +1,8 @@
 import { Info } from "../../components/blocks/Info";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { AuthorizationForm } from "../../components/forms/AuthorizationForm";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
 
 export class LoginPage extends Component {
     protected render(): Component | Component[] {

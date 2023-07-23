@@ -1,7 +1,6 @@
 import Handlebars from "handlebars";
-
-import { Component } from "../core";
-import { type IComponentProps } from "../core/component";
+import { Component } from "../../core";
+import { type IComponentProps } from "../../core/component";
 
 interface ButtonProps extends IComponentProps {
     onclick?: () => void;

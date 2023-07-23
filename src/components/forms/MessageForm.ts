@@ -1,10 +1,9 @@
-import { Component } from "../core";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { type IComponentProps } from "../core/component";
 import { Container } from "../blocks/container";
 import { validationValue } from "./helpers";
+import { Component, type IComponentProps } from "../../core/component";
 
 export interface MessageFormProps extends IComponentProps {
     message: string | null;

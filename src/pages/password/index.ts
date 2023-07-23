@@ -1,7 +1,8 @@
 import { Info } from "../../components/blocks/Info";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { PasswordForm } from "../../components/forms/PasswordForm";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
 
 export class PasswordPage extends Component {
     protected render(): Component | Component[] {
@@ -11,7 +12,7 @@ export class PasswordPage extends Component {
                     children: "изменение пароля",
                     tag: "h1"
                 }),
-                new PasswordForm({ value: { newPassword: null, password: null } }),
+                new PasswordForm({ value: { newPassword: null, password: null }, errors: { newPassword: null, password: null }, newPassword2: null }),
                 new Button({
                     onclick: this.handleCancel.bind(this),
                     children: "назад",

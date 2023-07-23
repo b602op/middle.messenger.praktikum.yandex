@@ -1,6 +1,7 @@
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { AvatarForm } from "../../components/forms";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
 
 export class AvatarPage extends Component {
     protected render(): Component | Component[] {

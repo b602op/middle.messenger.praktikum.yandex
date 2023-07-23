@@ -1,8 +1,9 @@
 import { Info } from "../../components/blocks/Info";
 import { Container } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { UserForm } from "../../components/forms/UserForm";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
 
 export class ProfilePage extends Component {
     protected render(): Component | Component[] {
