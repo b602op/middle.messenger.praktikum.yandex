@@ -4,6 +4,29 @@ import { RegistrationForm } from "../../components/forms/RegistrationForm";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
 
+const defaultData = {
+    value: {
+        email: null,
+        login: null,
+        name: null,
+        firstName: null,
+        displayName: null,
+        secondName: null,
+        phone: null,
+        password: null
+    },
+    errors: {
+        email: null,
+        login: null,
+        name: null,
+        firstName: null,
+        displayName: null,
+        secondName: null,
+        phone: null,
+        password: null
+    },
+    password2: null
+};
 export class RegistrationPage extends Component {
     protected render(): Component | Component[] {
         return new Page({
@@ -12,16 +35,7 @@ export class RegistrationPage extends Component {
                     children: "форма регистрации",
                     tag: "h1"
                 }),
-                new RegistrationForm({
-                    value: {
-                        email: null,
-                        login: null,
-                        name: null,
-                        second_name: null,
-                        phone: null,
-                        password: null
-                    }
-                }),
+                new RegistrationForm(defaultData),
                 new Button({
                     onclick: this.handleCancel.bind(this),
                     children: "назад",

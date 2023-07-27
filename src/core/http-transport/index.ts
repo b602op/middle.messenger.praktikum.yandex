@@ -19,36 +19,36 @@ export class HTTPTransport {
         this.endpoint = `${HTTPTransport.API_URL}${endpoint}`;
     }
 
-    public async get<Response>(path = "/"): Promise<Response> {
+    get = async<Response>(path = "/"): Promise<any> => {
         return await this.request<Response>(this.endpoint + path);
-    }
+    };
 
-    public async post<Response = void>(path: string, data?: unknown): Promise<Response> {
+    post = async<Response = void>(path: string, data?: unknown): Promise<any> => {
         return await this.request<Response>(this.endpoint + path, {
             method: Method.Post,
             data
         });
-    }
+    };
 
-    public async put<Response = void>(path: string, data: unknown): Promise<Response> {
-        return await this.request<Response>(this.endpoint + path, {
-            method: Method.Put,
-            data
-        });
-    }
+    // public async put<Response = void>(path: string, data: unknown): Promise<Response> {
+    //     return await this.request<Response>(this.endpoint + path, {
+    //         method: Method.Put,
+    //         data
+    //     });
+    // }
 
-    public async patch<Response = void>(path: string, data: unknown): Promise<Response> {
-        return await this.request<Response>(this.endpoint + path, {
-            method: Method.Patch,
-            data
-        });
-    }
+    // public async patch<Response = void>(path: string, data: unknown): Promise<Response> {
+    //     return await this.request<Response>(this.endpoint + path, {
+    //         method: Method.Patch,
+    //         data
+    //     });
+    // }
 
-    public async delete<Response>(path: string): Promise<Response> {
-        return await this.request<Response>(this.endpoint + path, {
-            method: Method.Delete
-        });
-    }
+    // public async delete<Response>(path: string): Promise<Response> {
+    //     return await this.request<Response>(this.endpoint + path, {
+    //         method: Method.Delete
+    //     });
+    // }
 
     private async request<Response>(url: string, options: Options = { method: Method.Get }): Promise<Response> {
         const { method, data } = options;

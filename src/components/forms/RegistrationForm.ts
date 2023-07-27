@@ -3,7 +3,7 @@ import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
 import { validationValue } from "./helpers";
-import AuthController from "../../controllers/AuthController";
+import signUpController from "../../controllers/sign-up-controller";
 
 export interface RegistrationFormFields {
     name: string | null;
@@ -24,21 +24,12 @@ export interface RegistrationFormProps extends IComponentProps {
 
 export class RegistrationForm extends Component<RegistrationFormProps> {
     constructor({
-        value
+        value, errors, password2
     }: RegistrationFormProps) {
         super({
             value,
-            errors: {
-                email: null,
-                login: null,
-                name: null,
-                firstName: null,
-                displayName: null,
-                secondName: null,
-                phone: null,
-                password: null
-            },
-            password2: null
+            errors,
+            password2
         });
     }
 
@@ -69,6 +60,14 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     onChange: this.handleChange.bind(this, "firstName"),
                     placeholder: "Имя",
                     error: this.props.errors.firstName
+                }),
+                new Input({
+                    children: "Имя в чате",
+                    value: this.props.value.displayName ?? "",
+                    name: "display_name",
+                    onChange: this.handleChange.bind(this, "displayName"),
+                    placeholder: "Имя в чате",
+                    error: this.props.errors.displayName
                 }),
                 new Input({
                     children: "Фамилия",
@@ -166,10 +165,19 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
             errors: this.props.password2 ? newErrors : { ...newErrors, password: "пароли не совпадают" }
         });
 
-        const data = this.props.value;
+        console.log(newErrors, Object.values(newErrors).filter(x => !x).length, this.props.password2);
 
-        console.log(data, " - Registration Data");
+        if (Object.values(newErrors).filter(x => !x).length && this.props.password2) {
+            const data = {
+                first_name: this.props.value.firstName ?? "",
+                second_name: this.props.value.secondName ?? "",
+                login: this.props.value.login ?? "",
+                email: this.props.value.email ?? "",
+                password: this.props.value.password ?? "",
+                phone: this.props.value.phone ?? ""
+            };
 
-        AuthController.signup(data);
+            signUpController.signUp(data);
+        }
     }
 }

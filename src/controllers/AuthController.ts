@@ -2,6 +2,10 @@ import { AuthAPI, type ISignInData, type ISignUpData } from "../api/AuthAPI";
 import Router from "../core/Router";
 import store from "../core/Store";
 
+export interface IResponse<T = unknown> {
+    status: number;
+    data: T;
+}
 class AuthController {
     private readonly api = new AuthAPI();
 

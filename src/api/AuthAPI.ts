@@ -25,24 +25,33 @@ export interface IUser {
     avatar: string;
 }
 
+export interface IResponse<TResponseData = any> {
+    status: number;
+    data: TResponseData;
+}
+
+export interface IResponseError {
+    reason: string;
+}
+
 export class AuthAPI extends API {
     constructor() {
         super("/auth");
     }
 
-    async signin(data: ISignInData): Promise<void> {
-        await this.http.post("/signin", data);
+    async signin<T>(data: ISignInData): Promise<IResponse<T>> {
+        return await this.http.post("/signin", data);
     }
 
-    async signup(data: ISignUpData): Promise<void> {
-        await this.http.post("/signup", data);
+    async signup<T>(data: ISignUpData): Promise<IResponse<T>> {
+        return await this.http.post("/signup", data);
     }
 
-    async logout(): Promise<void> {
-        await this.http.post("/logout");
+    async logout<T>(): Promise<IResponse<T>> {
+        return await this.http.post("/logout");
     }
 
-    async getUser(): Promise<IUser> {
+    async getUser<T>(): Promise<IResponse<T>> {
         return await this.http.get("/user");
     }
 };
