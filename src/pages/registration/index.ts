@@ -37,6 +37,6 @@ export class RegistrationPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        Router.go(RouterPath.registration);
+        Router.go(RouterPath.authorization);
     }
 }
