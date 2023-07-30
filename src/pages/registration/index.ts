@@ -4,6 +4,7 @@ import { RegistrationForm } from "../../components/forms/RegistrationForm";
 import { type RegistrationFormFields } from "../../components/forms/types";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
+import Router, { RouterPath } from "../../core/Router";
 
 const defaultData: RegistrationFormFields = {
     first_name: "Edik456",
@@ -14,13 +15,6 @@ const defaultData: RegistrationFormFields = {
     password2: "Edik456Edik456",
     phone: "+7456456456"
 };
-
-// first_name: newValue.name ?? "",
-//             second_name: newValue.secondName ?? "",
-//             login: newValue.login ?? "",
-//             email: newValue.email ?? "",
-//             password: newValue.password ?? "",
-//             phone: newValue.phone ?? ""
 
 export class RegistrationPage extends Component {
     protected render(): Component | Component[] {
@@ -41,8 +35,8 @@ export class RegistrationPage extends Component {
     }
 
     private handleCancel(event: SubmitEvent): void {
-        // event.preventDefault();
+        event.preventDefault();
 
-        // window.location.href = "/";
+        Router.go(RouterPath.registration);
     }
 }
