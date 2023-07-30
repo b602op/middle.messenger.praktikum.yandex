@@ -2,34 +2,22 @@ import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationValue } from "./helpers";
-import signUpController from "../../controllers/sign-up-controller";
-
-export interface RegistrationFormFields {
-    name: string | null;
-    email: string | null;
-    login: string | null;
-    displayName: string | null;
-    firstName: string | null;
-    secondName: string | null;
-    phone: string | null;
-    password: string | null;
-};
+import { validationFields } from "./helpers";
+import { controller } from "../../controllers";
+import { type FieldType, type RegistrationFormFields } from "./types";
 
 export interface RegistrationFormProps extends IComponentProps {
     value: RegistrationFormFields;
-    errors: Record<keyof RegistrationFormFields, string | null>;
-    password2: string | null;
+    errors?: Partial<RegistrationFormFields>;
 }
 
 export class RegistrationForm extends Component<RegistrationFormProps> {
     constructor({
-        value, errors, password2
+        value, errors
     }: RegistrationFormProps) {
         super({
             value,
-            errors,
-            password2
+            errors
         });
     }
 
@@ -43,7 +31,7 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     name: "email",
                     onChange: this.handleChange.bind(this, "email"),
                     placeholder: "Почта",
-                    error: this.props.errors.email
+                    error: this.props.errors?.email
                 }),
                 new Input({
                     children: "Логин",
@@ -51,31 +39,23 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     name: "login",
                     onChange: this.handleChange.bind(this, "login"),
                     placeholder: "Логин",
-                    error: this.props.errors.login
+                    error: this.props.errors?.login
                 }),
                 new Input({
                     children: "Имя",
-                    value: this.props.value.firstName ?? "",
+                    value: this.props.value.first_name ?? "",
                     name: "first_name",
                     onChange: this.handleChange.bind(this, "firstName"),
                     placeholder: "Имя",
-                    error: this.props.errors.firstName
-                }),
-                new Input({
-                    children: "Имя в чате",
-                    value: this.props.value.displayName ?? "",
-                    name: "display_name",
-                    onChange: this.handleChange.bind(this, "displayName"),
-                    placeholder: "Имя в чате",
-                    error: this.props.errors.displayName
+                    error: this.props.errors?.first_name
                 }),
                 new Input({
                     children: "Фамилия",
-                    value: this.props.value.secondName ?? "",
+                    value: this.props.value.second_name ?? "",
                     name: "second_name",
-                    onChange: this.handleChange.bind(this, "secondName"),
+                    onChange: this.handleChange.bind(this, "second_name"),
                     placeholder: "Фамилия",
-                    error: this.props.errors.secondName
+                    error: this.props.errors?.second_name
                 }),
                 new Input({
                     children: "Телефон",
@@ -83,7 +63,7 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     name: "phone",
                     onChange: this.handleChange.bind(this, "phone"),
                     placeholder: "Телефон",
-                    error: this.props.errors.phone
+                    error: this.props.errors?.phone
                 }),
                 new Input({
                     children: "Пароль",
@@ -91,14 +71,15 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     name: "password",
                     onChange: this.handleChange.bind(this, "password"),
                     placeholder: "Пароль",
-                    error: this.props.errors.password
+                    error: this.props.errors?.password
                 }),
                 new Input({
                     children: "Пароль(ещё раз)",
-                    value: this.props.password2 ?? "",
+                    value: this.props.value.password2 ?? "",
                     name: "password2",
-                    onChange: this.handleCheck.bind(this),
-                    placeholder: "Пароль"
+                    onChange: this.handleChange.bind(this, "password2"),
+                    placeholder: "Пароль",
+                    error: this.props.errors?.password2
                 }),
                 new Button({
                     children: "регистрация",
@@ -108,76 +89,40 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
         });
     }
 
-    protected handleCheck(event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
-
-        if (target.value === this.props.value.password) {
-            this.setProps({
-                ...this.props,
-                password2: target.value
-            });
-
-            return;
-        }
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, password: null },
-            errors: { ...this.props.errors, password: "пароли не совпадают" }
-        });
-    }
-
     protected handleChange(key: keyof RegistrationFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const [isError, currentValue] = validationValue(target.value, key);
-
-        if (isError) {
-            this.setProps({
-                ...this.props,
-                value: { ...this.props.value, [key]: null },
-                errors: { ...this.props.errors, [key]: currentValue }
-            });
-
-            return;
-        }
+        const { newValue, newErrors } = validationFields<RegistrationFormFields>(key, { ...this.props.value, [key]: target.value });
 
         this.setProps({
             ...this.props,
-            errors: { ...this.props.errors, [key]: null },
-            value: { ...this.props.value, [key]: currentValue }
+            value: { ...this.props.value, ...newValue },
+            errors: { ...this.props.errors, ...newErrors }
         });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const newErrors = { ...this.props.errors };
+        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof RegistrationFormFields>;
 
-        Object.keys(this.props.errors).forEach((currentKey: keyof RegistrationFormFields) => {
-            const [isError, value] = validationValue(this.props.value[currentKey] ?? "", currentKey);
+        const { newErrors, success, newValue } = validationFields<RegistrationFormFields>(keys, this.props.value);
 
-            newErrors[currentKey] = isError ? value : null;
-        });
+        if (success) {
+            controller.signUp({
+                first_name: newValue.first_name ?? "",
+                second_name: newValue.second_name ?? "",
+                login: newValue.login ?? "",
+                email: newValue.email ?? "",
+                password: newValue.password ?? "",
+                phone: newValue.phone ?? ""
+            });
+            return;
+        }
 
         this.setProps({
             ...this.props,
-            errors: this.props.password2 ? newErrors : { ...newErrors, password: "пароли не совпадают" }
+            errors: newErrors
         });
-
-        console.log(newErrors, Object.values(newErrors).filter(x => !x).length, this.props.password2);
-
-        if (Object.values(newErrors).filter(x => !x).length && this.props.password2) {
-            const data = {
-                first_name: this.props.value.firstName ?? "",
-                second_name: this.props.value.secondName ?? "",
-                login: this.props.value.login ?? "",
-                email: this.props.value.email ?? "",
-                password: this.props.value.password ?? "",
-                phone: this.props.value.phone ?? ""
-            };
-
-            signUpController.signUp(data);
-        }
     }
 }

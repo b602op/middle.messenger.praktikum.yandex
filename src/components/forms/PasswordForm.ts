@@ -2,30 +2,21 @@ import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationValue } from "./helpers";
-
-export interface PasswordFormFields {
-    password?: string | null;
-    newPassword?: string | null;
-};
+import { validationFields } from "./helpers";
+import { type FieldType, type PasswordFormFields } from "./types";
 
 export interface PasswordFormProps extends IComponentProps {
     value: PasswordFormFields;
-    errors: Record<keyof PasswordFormFields, string | null | undefined>;
-    newPassword2: string | null;
+    errors?: Partial<PasswordFormFields>;
 }
 
 export class PasswordForm extends Component<PasswordFormProps> {
     constructor({
-        value
+        value, errors
     }: PasswordFormProps) {
         super({
             value,
-            errors: {
-                password: null,
-                newPassword: null
-            },
-            newPassword2: null
+            errors
         });
     }
 
@@ -51,9 +42,9 @@ export class PasswordForm extends Component<PasswordFormProps> {
                 }),
                 new Input({
                     children: "пароль (ещё раз)",
-                    value: this.props.newPassword2 ?? "",
+                    value: this.props.value.newPassword2 ?? "",
                     name: "newPassword2",
-                    onChange: this.handleCheck.bind(this),
+                    onChange: this.handleChange.bind(this),
                     placeholder: "новый пароль"
                 }),
                 new Button({
@@ -64,78 +55,34 @@ export class PasswordForm extends Component<PasswordFormProps> {
         });
     }
 
-    protected handleCheck(event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
-
-        const isRepeated = target.value === this.props.value.password;
-
-        console.log(target.value, this.props.value.password);
-
-        if (!isRepeated && (target.value === this.props.value.newPassword)) {
-            this.setProps({
-                ...this.props,
-                newPassword2: target.value
-            });
-
-            return;
-        }
-
-        let passwordError;
-
-        if (isRepeated) {
-            passwordError = "придумайте другой пароль";
-        } else {
-            passwordError = "повторный пароль не корректен";
-        }
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, newPassword: null },
-            errors: { ...this.props.errors, newPassword: passwordError },
-            newPassword2: null
-        });
-    }
-
     protected handleChange(key: keyof PasswordFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const [isError, currentValue] = validationValue(target.value, key);
-
-        if (isError) {
-            this.setProps({
-                ...this.props,
-                value: { ...this.props.value, [key]: null },
-                errors: { ...this.props.errors, [key]: currentValue }
-            });
-
-            return;
-        }
+        const { newValue, newErrors } = validationFields<PasswordFormFields>(key, { ...this.props.value, [key]: target.value });
 
         this.setProps({
             ...this.props,
-            value: { ...this.props.value, [key]: currentValue },
-            errors: { ...this.props.errors, [key]: null }
+            value: { ...this.props.value, ...newValue },
+            errors: { ...this.props.errors, ...newErrors }
         });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const newErrors = { ...this.props.errors };
+        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof PasswordFormFields>;
 
-        Object.keys(this.props.errors).forEach((currentKey: keyof PasswordFormFields) => {
-            const [isError, value] = validationValue(this.props.value[currentKey] ?? "", currentKey);
+        const { newErrors, success, newValue } = validationFields<PasswordFormFields>(keys, this.props.value);
 
-            newErrors[currentKey] = isError ? value : null;
-        });
+        if (success) {
+            console.log(newValue, " можно отправлять");
 
-        console.log(newErrors, " newErrors");
+            return;
+        }
 
         this.setProps({
             ...this.props,
             errors: newErrors
         });
-
-        console.log(this.props.value, " - Password Data");
     }
 }

@@ -39,7 +39,7 @@ export class AuthAPI extends API {
         super("/auth");
     }
 
-    async signin<T>(data: ISignInData): Promise<IResponse<T>> {
+    async signIn<T>(data: ISignInData): Promise<IResponse<T>> {
         return await this.http.post("/signin", data);
     }
 

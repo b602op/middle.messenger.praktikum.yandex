@@ -2,23 +2,21 @@ import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
 import { Container } from "../blocks/container";
-import { validationValue } from "./helpers";
+import { validationFields } from "./helpers";
 import { Component, type IComponentProps } from "../../core/component";
-
+import { type FieldType, type MessageFormFields } from "./types";
 export interface MessageFormProps extends IComponentProps {
-    message: string | null;
-    errors: Record<string, string | null>;
+    value: MessageFormFields;
+    errors?: Partial<MessageFormFields>;
 }
 
 export class MessageForm extends Component<MessageFormProps> {
     constructor({
-        message
+        value, errors
     }: MessageFormProps) {
         super({
-            message,
-            errors: {
-                message: null
-            }
+            value,
+            errors
         });
     }
 
@@ -28,9 +26,9 @@ export class MessageForm extends Component<MessageFormProps> {
             children: new Container({
                 children: [
                     new Input({
-                        value: this.props.message ?? "",
+                        value: this.props.value.message ?? "",
                         name: "message",
-                        placeholder: this.props.errors.message ?? "новое сообщение",
+                        placeholder: this.props.errors?.message ?? "новое сообщение",
                         className: "chat-input",
                         onChange: this.handleChange.bind(this)
                     }),
@@ -44,31 +42,34 @@ export class MessageForm extends Component<MessageFormProps> {
         });
     }
 
-    protected handleChange(event: InputEvent): void {
+    protected handleChange(key: keyof MessageFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
+        const { newValue, newErrors } = validationFields<MessageFormFields>(key, { ...this.props.value, [key]: target.value });
+
         this.setProps({
-            message: target.value,
-            errors: { ...this.props.errors, message: null }
+            ...this.props,
+            value: { ...this.props.value, ...newValue },
+            errors: { ...this.props.errors, ...newErrors }
         });
     }
 
-    private handleFormSubmit(key: keyof MessageFormProps, event: SubmitEvent): void {
+    private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const [isError, currentValue] = validationValue(this.props.message ?? "", key);
+        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof MessageFormFields>;
 
-        if (isError) {
-            this.setProps({
-                ...this.props,
-                errors: { ...this.props.errors, message: currentValue }
-            });
+        const { newErrors, success, newValue } = validationFields<MessageFormFields>(keys, this.props.value);
 
-            console.log(this.props);
+        if (success) {
+            console.log(newValue, " можно отправлять");
 
             return;
         }
 
-        if (currentValue) console.log(currentValue, " - Message Data");
+        this.setProps({
+            ...this.props,
+            errors: newErrors
+        });
     }
 }

@@ -28,7 +28,7 @@ export class Chat extends Component<ChatProps> {
                     ],
                     className: "chat-items"
                 }),
-                new MessageForm({ message: null })
+                new MessageForm({ value: { message: null } })
             ],
             className: "chat"
         });

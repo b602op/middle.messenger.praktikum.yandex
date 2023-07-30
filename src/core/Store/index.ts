@@ -1,11 +1,17 @@
 import { type IUser } from "../../api/AuthAPI";
-import { type Component as Component2 } from "../component";
+import { type Component } from "../component";
 import { EventBus } from "../eventbus";
 import { set } from "../utils";
 
 export interface State {
     user?: IUser;
 }
+
+export enum StoreEvents {
+    Updated = "updated"
+}
+
+export type TState = Record<string, any>;
 
 enum StorageEvent {
     UpdateState = "update",
@@ -19,20 +25,22 @@ class Store extends EventBus {
     }
 
     set(path: string, value: unknown): undefined {
-        set(this.state, path, value);
+        const currentState = this.getState();
 
-        console.log(this.state);
+        set(currentState, path, value);
 
-        this.emit(StorageEvent.UpdateState, this.state);
+        if (typeof this.listeners[StoreEvents.Updated] !== "undefined") {
+            this.emit(StorageEvent.UpdateState, currentState);
+        }
     }
 }
 
 const store = new Store();
 
-export function withStore(mapStateToProps: (state: State) => any) {
-    return (Component: typeof Component2) => {
-        return class extends Component {
-            constructor(props: any) {
+export function withStore<T extends Record<string, any>>(mapStateToProps: (state: State) => any) {
+    return (CurrentComponent: typeof Component<T>) => {
+        return class extends CurrentComponent {
+            constructor(props: T) {
                 super({ ...props, ...mapStateToProps(store.getState()) });
 
                 store.on(StorageEvent.UpdateState, () => {

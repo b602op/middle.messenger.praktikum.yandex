@@ -1,9 +1,11 @@
 import { Info } from "../../components/blocks/Info";
 import { Container } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
-import { UserForm } from "../../components/forms/UserForm";
+import UserForm from "../../components/forms/UserForm";
 import { Page } from "../../components/main/page";
+import { controller } from "../../controllers";
 import { Component } from "../../core";
+import Router, { RouterPath } from "../../core/Router";
 
 export class ProfilePage extends Component {
     protected render(): Component | Component[] {
@@ -15,17 +17,7 @@ export class ProfilePage extends Component {
                 }),
                 new Container({
                     children: [
-                        new UserForm({
-                            value: {
-                                email: null,
-                                login: null,
-                                name: null,
-                                displayName: null,
-                                secondName: null,
-                                phone: null,
-                                password: null
-                            }
-                        }),
+                        new UserForm({}),
                         new Container({
                             children: [
                                 new Button({
@@ -37,8 +29,9 @@ export class ProfilePage extends Component {
                                     children: "изменить аватар"
                                 }),
                                 new Button({
-                                    onclick: this.handleCancel.bind(this),
-                                    children: "выйти"
+                                    onclick: this.handleChat.bind(this),
+                                    children: "перейти в чат",
+                                    className: "back"
                                 })
                             ]
                         })
@@ -47,10 +40,8 @@ export class ProfilePage extends Component {
                 }),
                 new Button({
                     onclick: this.handleCancel.bind(this),
-                    children: "назад",
-                    className: "back"
+                    children: "выйти"
                 })
-
             ]
         });
     }
@@ -58,7 +49,7 @@ export class ProfilePage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        controller.logout();
     }
 
     private handleToChangePassword(event: SubmitEvent): void {
@@ -71,5 +62,11 @@ export class ProfilePage extends Component {
         event.preventDefault();
 
         window.location.href = "/avatar";
+    }
+
+    private handleChat(event: SubmitEvent): void {
+        event.preventDefault();
+
+        Router.go(RouterPath.chat);
     }
 }

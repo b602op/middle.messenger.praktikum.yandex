@@ -18,6 +18,18 @@ function render(query: string, block: Component): Element {
     return root;
 }
 
+export enum RouterPath {
+    authorization = "/",
+    default = "/",
+    chat = "/messenger",
+    registration = "/registration",
+    avatar = "/avatar",
+    profile = "/profile",
+    page404 = "/404",
+    page500 = "/500",
+    password = "/password",
+}
+
 class Route {
     private block: Component | null = null;
 
@@ -44,7 +56,7 @@ class Route {
     }
 }
 
-class Router {
+export class Router {
     private static __instance: Router;
     private readonly routes: Route[] = [];
     private currentRoute: Route | null = null;
@@ -60,24 +72,24 @@ class Router {
         Router.__instance = this;
     }
 
-    public use(pathname: string, block: typeof Component): this {
+    public use(pathname: RouterPath, block: typeof Component): this {
         const route = new Route(pathname, block, this.rootQuery);
         this.routes.push(route);
 
         return this;
     }
 
-    public start(): undefined {
+    public start(): void {
         window.onpopstate = (event: PopStateEvent) => {
             const target = event.currentTarget as Window;
 
-            this._onRoute(target.location.pathname);
+            this._onRoute(target.location.pathname as any);
         };
 
-        this._onRoute(window.location.pathname);
+        this._onRoute(window.location.pathname as any);
     }
 
-    private _onRoute(pathname: string): undefined {
+    private _onRoute(pathname: RouterPath): void {
         const route = this.getRoute(pathname);
 
         if (!route) {
@@ -93,23 +105,23 @@ class Router {
         route.render();
     }
 
-    public go(pathname: string): undefined {
+    public go(pathname: RouterPath): void {
         this.history.pushState({}, "", pathname);
 
         this._onRoute(pathname);
     }
 
-    public back(): undefined {
+    public back(): void {
         this.history.back();
     }
 
-    public forward(): undefined {
+    public forward(): void {
         this.history.forward();
     }
 
-    private getRoute(pathname: string): Route | undefined {
-        return this.routes.find(route => route.match(pathname));
+    private getRoute(pathname: RouterPath): Route | undefined {
+        return this.routes.find((Route) => Route.match(pathname));
     }
 }
 
-export default new Router("#app");
+export default new Router("#root");

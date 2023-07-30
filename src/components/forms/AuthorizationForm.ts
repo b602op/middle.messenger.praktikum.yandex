@@ -2,24 +2,22 @@ import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationValue } from "./helpers";
+import { validationFields } from "./helpers";
+import { type FieldType, type AuthorizationFormFields } from "./types";
+import { controller } from "../../controllers";
 
-interface AuthorizationFormFields { login: string | null; password: string | null };
 export interface AuthorizationFormProps extends IComponentProps {
     value: AuthorizationFormFields;
-    errors?: Record<string, string | null>;
+    errors?: Partial<AuthorizationFormFields>;
 }
 
 export class AuthorizationForm extends Component<AuthorizationFormProps> {
     constructor({
-        value
+        value, errors
     }: AuthorizationFormProps) {
         super({
             value,
-            errors: {
-                login: null,
-                password: null
-            }
+            errors
         });
     }
 
@@ -33,7 +31,7 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
                     name: "login",
                     onChange: this.handleChange.bind(this, "login"),
                     placeholder: "login",
-                    error: this.props.errors.login
+                    error: this.props.errors?.login
                 }),
                 new Input({
                     children: "пароль",
@@ -41,7 +39,7 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
                     name: "password",
                     onChange: this.handleChange.bind(this, "password"),
                     placeholder: "password",
-                    error: this.props.errors.password
+                    error: this.props.errors?.password
                 }),
                 new Button({
                     onclick: this.handleFormSubmit.bind(this),
@@ -54,30 +52,34 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
     protected handleChange(key: keyof AuthorizationFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
+        const { newValue, newErrors } = validationFields<AuthorizationFormFields>(key, { ...this.props.value, [key]: target.value });
+
         this.setProps({
             ...this.props,
-            value: { ...this.props.value, [key]: target.value }
+            value: { ...this.props.value, ...newValue },
+            errors: { ...this.props.errors, ...newErrors }
         });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const newErrors = { ...this.props.errors };
+        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AuthorizationFormFields>;
 
-        Object.keys(this.props.errors).forEach((currentKey: keyof AuthorizationFormFields) => {
-            const [isError] = validationValue(this.props.value[currentKey] ?? "", currentKey);
+        const { newErrors, success, newValue } = validationFields<AuthorizationFormFields>(keys, this.props.value);
 
-            newErrors[currentKey] = isError ? "некорректные данные" : null;
-        });
+        if (success) {
+            controller.signIn({
+                login: newValue.login ?? "",
+                password: newValue.password ?? ""
+            });
+
+            return;
+        }
 
         this.setProps({
             ...this.props,
             errors: newErrors
         });
-
-        console.log(this.props.errors);
-
-        console.log(this.props.value, " - Authorization Data");
     }
 }

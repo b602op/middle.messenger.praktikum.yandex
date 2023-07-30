@@ -19,15 +19,27 @@ export class HTTPTransport {
         this.endpoint = `${HTTPTransport.API_URL}${endpoint}`;
     }
 
-    get = async<Response>(path = "/"): Promise<any> => {
-        return await this.request<Response>(this.endpoint + path);
+    get = async<T>(path = "/"): Promise<{ status: number; data: T; response: Response }> => {
+        const response = await this.request(this.endpoint + path);
+
+        const data = await response.json();
+
+        const status = response.status as number;
+
+        return { status, data, response };
     };
 
-    post = async<Response = void>(path: string, data?: unknown): Promise<any> => {
-        return await this.request<Response>(this.endpoint + path, {
+    post = async<T>(path: string, data?: unknown): Promise<{ status: number; data: T; response: Response }> => {
+        const response = await this.request(this.endpoint + path, {
             method: Method.Post,
             data
         });
+
+        const responseData = await response.json();
+
+        const status = response.status as number;
+
+        return { status, data: responseData, response };
     };
 
     // public async put<Response = void>(path: string, data: unknown): Promise<Response> {
@@ -50,37 +62,16 @@ export class HTTPTransport {
     //     });
     // }
 
-    private async request<Response>(url: string, options: Options = { method: Method.Get }): Promise<Response> {
+    private async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
         const { method, data } = options;
 
-        return await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open(method, url);
-
-            xhr.onreadystatechange = (e) => {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status < 400) {
-                        resolve(xhr.response);
-                    } else {
-                        reject(xhr.response);
-                    }
-                }
-            };
-
-            xhr.onabort = () => reject;
-            xhr.onerror = () => reject;
-            xhr.ontimeout = () => reject;
-
-            xhr.setRequestHeader("Content-Type", "application/json");
-
-            xhr.withCredentials = true;
-            xhr.responseType = "json";
-
-            if (method === Method.Get || !data) {
-                xhr.send();
-            } else {
-                xhr.send(JSON.stringify(data));
-            }
+        return await fetch(url, {
+            method,
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         });
     }
 }

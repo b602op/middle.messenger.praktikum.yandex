@@ -2,21 +2,21 @@ import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationValue } from "./helpers";
+import { validationFields } from "./helpers";
+import { type FieldType, type AvatarFormFields } from "./types";
+
 export interface AvatarFormProps extends IComponentProps {
-    avatar: string | null;
-    errors?: Record<string, string | null>;
+    value: AvatarFormFields;
+    errors?: Partial<AvatarFormFields>;
 }
 
 export class AvatarForm extends Component<AvatarFormProps> {
     constructor({
-        avatar
+        value, errors
     }: AvatarFormProps) {
         super({
-            avatar,
-            errors: {
-                avatar: null
-            }
+            value,
+            errors
         });
     }
 
@@ -26,11 +26,11 @@ export class AvatarForm extends Component<AvatarFormProps> {
             children: [
                 new Input({
                     children: "ссылка на аватарку",
-                    value: this.props.avatar ?? "",
+                    value: this.props.value.avatar ?? "",
                     name: "avatar",
                     onChange: this.handleChange.bind(this),
                     placeholder: "url",
-                    error: this.props.errors.avatar
+                    error: this.props.errors?.avatar
                 }),
                 new Button({
                     children: "отправить",
@@ -40,27 +40,34 @@ export class AvatarForm extends Component<AvatarFormProps> {
         });
     }
 
-    protected handleChange(event: InputEvent): void {
+    protected handleChange(key: keyof AvatarFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
+
+        const { newValue, newErrors } = validationFields<AvatarFormFields>(key, { ...this.props.value, [key]: target.value });
 
         this.setProps({
             ...this.props,
-            avatar: target.value
+            value: { ...this.props.value, ...newValue },
+            errors: { ...this.props.errors, ...newErrors }
         });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const [isError, currentValue] = validationValue(this.props.avatar ?? "", "avatar");
+        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AvatarFormFields>;
 
-        if (isError) {
-            this.setProps({ ...this.props, errors: { ...this.props.errors, avatar: currentValue } });
+        const { newErrors, success, newValue } = validationFields<AvatarFormFields>(keys, this.props.value);
+
+        if (success) {
+            console.log(newValue, " можно отправлять");
+
             return;
         }
 
-        this.setProps({ ...this.props, errors: { ...this.props.errors, avatar: null } });
-
-        console.log(currentValue, " - Avatar Data");
+        this.setProps({
+            ...this.props,
+            errors: newErrors
+        });
     }
 }
