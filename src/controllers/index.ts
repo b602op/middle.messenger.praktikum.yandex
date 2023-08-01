@@ -1,4 +1,4 @@
-import { AuthAPI, ChatAPI, type ISignInData, type ISignUpData } from "../api/AuthAPI";
+import { AuthAPI, ChatAPI, UserAPI, type ISignInData, type ISignUpData } from "../api/AuthAPI";
 import Router, { RouterPath } from "../core/Router";
 import store from "../core/Store";
 
@@ -10,6 +10,15 @@ export interface IResponse<T = unknown> {
 class AuthController {
     private readonly api = new AuthAPI();
     private readonly apiChat = new ChatAPI();
+    private readonly apiUser = new UserAPI();
+
+    public setAvatar(data: FormData): void {
+        console.log(data, " data");
+        this.apiUser.setAvatar(data)
+            .then(console.log)
+            .catch(console.log)
+            .catch(console.log);
+    }
 
     public signIn(data: ISignInData): void {
         try {

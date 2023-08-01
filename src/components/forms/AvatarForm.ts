@@ -1,14 +1,17 @@
+import { controller } from "../../controllers";
 import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationFields } from "./helpers";
-import { type FieldType, type AvatarFormFields } from "./types";
+import { type AvatarFormFields } from "./types";
 
 export interface AvatarFormProps extends IComponentProps {
     value: AvatarFormFields;
     errors?: Partial<AvatarFormFields>;
+    file?: any;
 }
+
+const formData = new FormData();
 
 export class AvatarForm extends Component<AvatarFormProps> {
     constructor({
@@ -28,9 +31,10 @@ export class AvatarForm extends Component<AvatarFormProps> {
                     children: "ссылка на аватарку",
                     value: this.props.value.avatar ?? "",
                     name: "avatar",
-                    onChange: this.handleChange.bind(this),
+                    onChange: this.handleChange.bind(this, "avatar"),
                     placeholder: "url",
-                    error: this.props.errors?.avatar
+                    error: this.props.errors?.avatar,
+                    type: "file"
                 }),
                 new Button({
                     children: "отправить",
@@ -43,31 +47,50 @@ export class AvatarForm extends Component<AvatarFormProps> {
     protected handleChange(key: keyof AvatarFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const { newValue, newErrors } = validationFields<AvatarFormFields>(key, { ...this.props.value, [key]: target.value });
+        const file = target.files?.item(0);
 
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, ...newValue },
-            errors: { ...this.props.errors, ...newErrors }
-        });
+        if (file) {
+            formData.append("avatar", file);
+        }
+
+        // this.setProps({
+        //     ...this.props,
+        //     file
+        // });
+
+        // const { newValue, newErrors } = validationFields<AvatarFormFields>(key, { ...this.props.value, [key]: target.value });
+
+        // this.setProps({
+        //     ...this.props,
+        //     value: { ...this.props.value, ...newValue },
+        //     errors: { ...this.props.errors, ...newErrors }
+        // });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AvatarFormFields>;
+        console.log(formData);
 
-        const { newErrors, success, newValue } = validationFields<AvatarFormFields>(keys, this.props.value);
+        const test = formData.get("avatar");
 
-        if (success) {
-            console.log(newValue, " можно отправлять");
+        console.log(test, " test");
 
-            return;
-        }
+        controller.setAvatar(formData);
 
-        this.setProps({
-            ...this.props,
-            errors: newErrors
-        });
+        // const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AvatarFormFields>;
+
+        // const { newErrors, success, newValue } = validationFields<AvatarFormFields>(keys, this.props.value);
+
+        // if (success) {
+        //     console.log(newValue, " можно отправлять");
+
+        //     return;
+        // }
+
+        // this.setProps({
+        //     ...this.props,
+        //     errors: newErrors
+        // });
     }
 }

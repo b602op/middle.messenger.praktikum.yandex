@@ -9,10 +9,11 @@ interface InputProps extends IComponentProps {
     name: string;
     placeholder?: string;
     error?: string | null;
+    type?: string;
 };
 
 export class Input extends Component<InputProps> {
-    constructor({ error, className, name, children, value, onChange, onFocus, placeholder }: InputProps) {
-        super({ error, className, name, children, value, onChange, onFocus, placeholder }, Handlebars.compile(`<label class="{{{ className }}}">{{{ children }}}<input {{#if error }}class="error"{{/if}} mozactionhint="" placeholder="{{{ placeholder }}}" name="{{{ name }}}" value="{{{ value }}}"></label>{{#if error }}<span class="error">{{{error}}}</span>{{/if}}`));
+    constructor({ error, className, name, children, value, onChange, onFocus, placeholder, type }: InputProps) {
+        super({ error, className, name, children, value, onChange, onFocus, placeholder, type }, Handlebars.compile(`<label class="{{{ className }}}">{{{ children }}}<input {{#if error }}class="error"{{/if}} mozactionhint="" placeholder="{{{ placeholder }}}" name="{{{ name }}}" value="{{{ value }}}" type="{{{ type }}}"></label>{{#if error }}<span class="error">{{{error}}}</span>{{/if}}`));
     }
 }

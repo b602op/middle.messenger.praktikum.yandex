@@ -43,9 +43,14 @@ export class HTTPTransport {
             newData = await response.data.json();
         }
 
-        console.log(status, newData, response, " answer post");
-
         return { status, data: newData, response };
+    };
+
+    put = async<Response = void>(path: string, data: unknown): Promise<Response> => {
+        return await this.request(this.endpoint + path, {
+            method: Method.Put,
+            data
+        });
     };
 
     // public async put<Response = void>(path: string, data: unknown): Promise<Response> {

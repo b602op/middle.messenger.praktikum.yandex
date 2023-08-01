@@ -76,3 +76,13 @@ export class ChatAPI extends API {
         return await this.http.post("", data);
     }
 };
+
+export class UserAPI extends API {
+    constructor() {
+        super("/user");
+    }
+
+    async setAvatar<T>(data: any): Promise<IResponse<T>> {
+        return await this.http.put("profile/avatar/", data);
+    }
+};
