@@ -1,3 +1,4 @@
+import Router, { RouterPath } from "../../../core/Router";
 import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
 import { Button } from "../../buttons";
@@ -22,7 +23,7 @@ class AvatarIcon extends Component<ChatProps> {
     private handleToProfile(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = this.props.href ?? "/";
+        Router.go(RouterPath.profile);
     }
 }
 

@@ -31,8 +31,6 @@ export class LoginPage extends Component {
         event.preventDefault();
 
         Router.back();
-
-        // window.location.href = "/";
     }
 
     private handleToRegistration(event: SubmitEvent): void {

@@ -97,7 +97,6 @@ export class Router {
         if (!route) {
             const route3 = this.getRoute(RouterPath.page404);
             if (route3) {
-                console.log('route3')
                 this.currentRoute = route3;
                 route3.render();
             }
@@ -114,7 +113,6 @@ export class Router {
         if (!currentUser) {
             const route2 = this.getRoute(RouterPath.authorization);
             if (route2) {
-                console.log('route2')
                 this.currentRoute = route2;
                 route2.render();
             }
@@ -122,16 +120,12 @@ export class Router {
             if (pathname === RouterPath.authorization) {
                 const route4 = this.getRoute(RouterPath.chat);
                 if (route4) {
-                    console.log('route4')
-
                     this.currentRoute = route4;
 
                     route4.render();
                 }
                 ;
             } else {
-                console.log('route')
-
                 this.currentRoute = route;
                 route.render();
             }

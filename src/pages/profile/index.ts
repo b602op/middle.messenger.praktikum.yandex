@@ -58,13 +58,13 @@ export class ProfilePage extends Component {
     private handleToChangePassword(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/password";
+        Router.go(RouterPath.password);
     }
 
     private handleToChangeAvatar(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/avatar";
+        Router.go(RouterPath.avatar);
     }
 
     private handleChat(event: SubmitEvent): void {

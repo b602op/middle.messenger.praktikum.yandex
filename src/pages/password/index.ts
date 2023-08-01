@@ -3,6 +3,7 @@ import { Button } from "../../components/buttons";
 import { PasswordForm } from "../../components/forms/PasswordForm";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
+import Router from "../../core/Router";
 
 export class PasswordPage extends Component {
     protected render(): Component | Component[] {
@@ -25,6 +26,6 @@ export class PasswordPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/profile";
+        Router.back();
     }
 }

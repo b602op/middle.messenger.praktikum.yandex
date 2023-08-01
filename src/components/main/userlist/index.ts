@@ -21,9 +21,10 @@ class UserList extends Component<ChatProps> {
             children: [
                 new Container({
                     children: [
-                        new Button({
-                            children: `обновить чаты`,
-                            onclick: this.handleUpdateUserList.bind(this)
+                        new NewUser({
+                            value: {
+                                title: ""
+                            }
                         }),
                         ...((this.props.value ?? []).map(({
                             id, title
@@ -36,10 +37,9 @@ class UserList extends Component<ChatProps> {
                                 onclick: this.handleChange.bind(this, id)
                             });
                         })),
-                        new NewUser({
-                            value: {
-                                title: ""
-                            }
+                        new Button({
+                            children: `обновить чаты`,
+                            onclick: this.handleUpdateUserList.bind(this)
                         })
                     ],
                     className: "user-chat-items"

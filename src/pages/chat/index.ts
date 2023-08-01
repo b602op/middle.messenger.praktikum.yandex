@@ -5,6 +5,7 @@ import { AvatarIcon, UserList } from "../../components/main";
 import { Chat } from "../../components/main/chat/Chat";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
+import Router from "../../core/Router";
 
 export class ChatPage extends Component {
     protected render(): Component | Component[] {
@@ -22,7 +23,6 @@ export class ChatPage extends Component {
                             value: []
                         }),
                         new AvatarIcon({
-                            href: "/profile/",
                             children: "Иван Иванов Иванович"
                         })
                     ],
@@ -41,6 +41,6 @@ export class ChatPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        Router.back();
     }
 }

@@ -45,7 +45,6 @@ class AuthController {
 
         this.apiChat.getChats()
             .then(async({ data, status }) => {
-                console.log(data, status, " this.apiChat.getChats()");
                 if (status === 200) {
                     store.set("chats", data);
                     store.set("loading.chats", false);
