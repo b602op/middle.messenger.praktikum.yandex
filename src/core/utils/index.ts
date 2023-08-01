@@ -35,7 +35,5 @@ export function set(object: Indexed | unknown, path: string, value: unknown): In
         [key]: acc
     }), value as any);
 
-    const test24 = merge(object as Indexed, result);
-
-    return test24;
+    return merge(object as Indexed, result);
 }

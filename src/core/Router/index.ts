@@ -1,3 +1,4 @@
+import store from "../Store";
 import { type Component } from "../component";
 
 function isEqual(lhs: string, rhs: string): boolean {
@@ -22,9 +23,9 @@ export enum RouterPath {
     authorization = "/",
     default = "/",
     chat = "/messenger",
-    registration = "/registration",
+    registration = "/sign-up",
     avatar = "/avatar",
-    profile = "/profile",
+    profile = "/settings",
     page404 = "/404",
     page500 = "/500",
     password = "/password",
@@ -74,6 +75,7 @@ export class Router {
 
     public use(pathname: RouterPath, block: typeof Component): this {
         const route = new Route(pathname, block, this.rootQuery);
+
         this.routes.push(route);
 
         return this;
@@ -93,6 +95,13 @@ export class Router {
         const route = this.getRoute(pathname);
 
         if (!route) {
+            const route3 = this.getRoute(RouterPath.page404);
+            if (route3) {
+                console.log('route3')
+                this.currentRoute = route3;
+                route3.render();
+            }
+
             return;
         }
 
@@ -100,9 +109,33 @@ export class Router {
             this.currentRoute.leave();
         }
 
-        this.currentRoute = route;
+        const currentUser = store.getState().user;
 
-        route.render();
+        if (!currentUser) {
+            const route2 = this.getRoute(RouterPath.authorization);
+            if (route2) {
+                console.log('route2')
+                this.currentRoute = route2;
+                route2.render();
+            }
+        } else {
+            if (pathname === RouterPath.authorization) {
+                const route4 = this.getRoute(RouterPath.chat);
+                if (route4) {
+                    console.log('route4')
+
+                    this.currentRoute = route4;
+
+                    route4.render();
+                }
+                ;
+            } else {
+                console.log('route')
+
+                this.currentRoute = route;
+                route.render();
+            }
+        }
     }
 
     public go(pathname: RouterPath): void {

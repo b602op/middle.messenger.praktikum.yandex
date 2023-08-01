@@ -356,6 +356,7 @@ export class Component<P extends Record<string, any> = any> {
 
     private _componentDidUpdate(oldProps: P, newProps: P): void {
         const response = this.componentDidUpdate(oldProps, newProps);
+        this.eventBus.emit(ComponentEvent.RENDER);
         response && this.eventBus.emit(ComponentEvent.RENDER);
     }
 

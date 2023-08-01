@@ -6,6 +6,7 @@ import { Page } from "../../components/main/page";
 import { controller } from "../../controllers";
 import { Component } from "../../core";
 import Router, { RouterPath } from "../../core/Router";
+import store from "../../core/Store";
 
 export class ProfilePage extends Component {
     protected render(): Component | Component[] {
@@ -49,6 +50,8 @@ export class ProfilePage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
+        store.clearStore();
+
         controller.logout();
     }
 
@@ -66,6 +69,8 @@ export class ProfilePage extends Component {
 
     private handleChat(event: SubmitEvent): void {
         event.preventDefault();
+
+        controller.getChats();
 
         Router.go(RouterPath.chat);
     }

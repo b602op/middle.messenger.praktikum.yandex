@@ -7,13 +7,9 @@ export interface State {
     user?: IUser;
 }
 
-export enum StoreEvents {
-    Updated = "updated"
-}
-
 export type TState = Record<string, any>;
 
-enum StorageEvent {
+export enum StorageEvent {
     UpdateState = "update",
 }
 
@@ -24,32 +20,25 @@ class Store extends EventBus {
         return this.state;
     }
 
-    set(path: string, value: unknown): undefined {
+    set(path: string, value: unknown): void {
         const currentState = this.getState();
 
         set(currentState, path, value);
 
-        if (typeof this.listeners[StoreEvents.Updated] !== "undefined") {
+        if (typeof this.listeners[StorageEvent.UpdateState] !== "undefined") {
             this.emit(StorageEvent.UpdateState, currentState);
         }
+    }
+
+    clearStore(): void {
+        const currentState = this.getState();
+
+        Object.keys(currentState).forEach(path => {
+            this.set(path, null);
+        });
     }
 }
 
 const store = new Store();
-
-export function withStore<T extends Record<string, any>>(mapStateToProps: (state: State) => any) {
-    return (CurrentComponent: typeof Component<T>) => {
-        return class extends CurrentComponent {
-            constructor(props: T) {
-                super({ ...props, ...mapStateToProps(store.getState()) });
-
-                store.on(StorageEvent.UpdateState, () => {
-                    const propsFromState = mapStateToProps(store.getState());
-                    this.setProps(propsFromState);
-                });
-            }
-        };
-    };
-}
 
 export default store;

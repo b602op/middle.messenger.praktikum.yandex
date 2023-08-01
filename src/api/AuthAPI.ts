@@ -9,6 +9,10 @@ export interface ISignUpData {
     phone: string;
 }
 
+export interface ICreateChatData {
+    title: string;
+}
+
 export interface ISignInData {
     login: string;
     password: string;
@@ -53,5 +57,22 @@ export class AuthAPI extends API {
 
     async getUser<T>(): Promise<IResponse<T>> {
         return await this.http.get("/user");
+    }
+
+    async getChats<T>(): Promise<IResponse<T>> {
+        return await this.http.post("/chats");
+    }
+};
+export class ChatAPI extends API {
+    constructor() {
+        super("/chats");
+    }
+
+    async getChats<T>(): Promise<IResponse<T>> {
+        return await this.http.get();
+    }
+
+    async createChat<T>(data: ICreateChatData): Promise<IResponse<T>> {
+        return await this.http.post("", data);
     }
 };

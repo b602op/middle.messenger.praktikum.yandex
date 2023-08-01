@@ -3,6 +3,7 @@ import { Button } from "../../components/buttons";
 import { AuthorizationForm } from "../../components/forms/AuthorizationForm";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
+import Router, { RouterPath } from "../../core/Router";
 
 export class LoginPage extends Component {
     protected render(): Component | Component[] {
@@ -29,12 +30,14 @@ export class LoginPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        Router.back();
+
+        // window.location.href = "/";
     }
 
     private handleToRegistration(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/registration";
+        Router.go(RouterPath.registration);
     }
 }

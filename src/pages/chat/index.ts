@@ -11,29 +11,15 @@ export class ChatPage extends Component {
         return new Page({
             children: [
                 new Info({
-                    children: "страница чата",
+                    children: "страница чатов",
                     tag: "h1"
                 }),
 
                 new Container({
                     children: [
-                        new UserList({
-                            value: [{ name: "Петя Петров Петрович", imageUrl: "", active: true }, { name: "Саша Сашов Сашович", imageUrl: "", active: false }, { name: "Вася Васов Весович", imageUrl: "", active: false }]
-                        }),
+                        new UserList({}),
                         new Chat({
-                            value: [{
-                                massage: "привет, Иван",
-                                self: false
-                            }, {
-                                massage: "привет, Петя",
-                                self: true
-                            }, {
-                                massage: "пока, Иван",
-                                self: false
-                            }, {
-                                massage: "давай пока, Петя",
-                                self: true
-                            }]
+                            value: []
                         }),
                         new AvatarIcon({
                             href: "/profile/",

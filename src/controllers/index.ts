@@ -1,4 +1,4 @@
-import { AuthAPI, type ISignInData, type ISignUpData } from "../api/AuthAPI";
+import { AuthAPI, ChatAPI, type ISignInData, type ISignUpData } from "../api/AuthAPI";
 import Router, { RouterPath } from "../core/Router";
 import store from "../core/Store";
 
@@ -9,16 +9,18 @@ export interface IResponse<T = unknown> {
 
 class AuthController {
     private readonly api = new AuthAPI();
+    private readonly apiChat = new ChatAPI();
 
     public signIn(data: ISignInData): void {
         try {
             this.api.signIn(data)
                 .then(({ status }) => {
                     if (status !== 200) {
-                        console.error(status, " код ответа на аутентификацию не 200");
+                        this.getUser();
+                        console.log("авторизован");
+                    } else {
+                        console.log("не авторизован");
                     }
-
-                    this.getUser();
                 })
                 .catch(problems => {
                     console.log("запрос на аутентификацию не отработал: ", problems);
@@ -30,28 +32,51 @@ class AuthController {
     }
 
     public signUp(data: ISignUpData): void {
-        try {
-            this.api.signup(data)
-                .then(async({ data, status }) => {
-                    if (status === 200) {
-                        if ("id" in ((data || {}) as any)) {
-                            this.getUser();
-                        }
-                    } else {
-                        console.error(status, data, " запрос на юзера не 200");
-                    }
-                })
-                .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
-                .finally(console.log);
-        } catch (error) {
-            console.error(error);
-        }
+        this.api.signup(data)
+            .then(({ data, status }) => {
+                console.log(data, status);
+            })
+            .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
+            .finally(console.log);
+    }
+
+    public getChats(): void {
+        store.set("loading.chats", true);
+
+        this.apiChat.getChats()
+            .then(async({ data, status }) => {
+                console.log(data, status, " this.apiChat.getChats()");
+                if (status === 200) {
+                    store.set("chats", data);
+                    store.set("loading.chats", false);
+                }
+            })
+            .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
+            .finally(console.info);
+    }
+
+    public createChat(title: string): void {
+        store.set("loading.createChats", true);
+
+        this.apiChat.createChat({ title })
+            .then(({ status }) => {
+                if (status === 200) {
+                    console.info("успешно добавлен чат с ", title);
+                } else {
+                    console.info("ошибка добавления чата с ", title);
+                }
+            })
+            .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
+            .finally(() => {
+                store.set("loading.createChats", false);
+            });
     }
 
     public getUser(): void {
+        console.log("getUser ок");
         try {
             this.api.getUser()
-                .then(async({ data, status }) => {
+                .then(({ data, status }) => {
                     if (status === 200) {
                         store.set("user", data);
 

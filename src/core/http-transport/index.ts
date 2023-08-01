@@ -35,11 +35,17 @@ export class HTTPTransport {
             data
         });
 
-        const responseData = await response.json();
-
         const status = response.status as number;
 
-        return { status, data: responseData, response };
+        let newData = null;
+
+        if (response.data) {
+            newData = await response.data.json();
+        }
+
+        console.log(status, newData, response, " answer post");
+
+        return { status, data: newData, response };
     };
 
     // public async put<Response = void>(path: string, data: unknown): Promise<Response> {
@@ -65,13 +71,15 @@ export class HTTPTransport {
     private async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
         const { method, data } = options;
 
-        return await fetch(url, {
+        const test = await fetch(url, {
             method,
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data)
+            body: data ? JSON.stringify(data) : data
         });
+
+        return test;
     }
 }

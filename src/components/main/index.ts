@@ -1,2 +1,4 @@
-export { UserList } from "./userlist";
-export { AvatarIcon } from "./avataricon";
+import UserList from "./userlist";
+import AvatarIcon from "./avataricon";
+
+export { UserList, AvatarIcon };

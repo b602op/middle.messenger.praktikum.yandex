@@ -13,9 +13,9 @@ const validateValue = ({ type, value }: { type: FieldType; value: string | null 
         case "id": {
             return [false, value ?? ""];
         }
-        case "display_name":
-        case "firstName":
-        case "secondName": {
+        // case "firstName":
+        // case "secondName":
+        case "display_name": {
             if (!value) return [true, "заполните поле"];
 
             const firstLatter = value[0];
@@ -73,11 +73,11 @@ const validateValue = ({ type, value }: { type: FieldType; value: string | null 
             if (!value) return [true, "укажите ссылку на аватар"];
             return [false, value];
         }
-        case "displayName": {
-            if (!value) return [true, "укажите имя в чате"];
+        // case "displayName": {
+        //     if (!value) return [true, "укажите имя в чате"];
 
-            return [false, value];
-        }
+        //     return [false, value];
+        // }
         default: {
             return [false, "поле без валидации"];
         }

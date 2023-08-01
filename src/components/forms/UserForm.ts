@@ -1,4 +1,4 @@
-import { withStore } from "../../core/Store";
+import { withStore } from "../../core/Store/hook";
 import { Component, type IComponentProps } from "../../core/component";
 import { Image } from "../blocks";
 import { Button } from "../buttons";

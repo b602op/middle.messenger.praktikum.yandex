@@ -1,16 +1,17 @@
+import { controller } from "../../../controllers";
+import store from "../../../core/Store";
+import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
 import { Container } from "../../blocks/container";
 import { Button } from "../../buttons";
+import { NewUser } from "./NewUser";
 
 interface ChatProps extends IComponentProps {
-    value: Array<{
-        name: string;
-        imageUrl: string;
-        active: boolean;
-    }>;
+    value?: Array<{ id: string | null; title: string | null }>;
+    activeId?: string;
 };
 
-export class UserList extends Component<ChatProps> {
+class UserList extends Component<ChatProps> {
     constructor({ value }: ChatProps) {
         super({ value });
     }
@@ -20,14 +21,25 @@ export class UserList extends Component<ChatProps> {
             children: [
                 new Container({
                     children: [
-                        ...this.props.value.map(({ name, imageUrl, active }) => {
-                            const className = active ? "user-chat-item-active" : "user-chat-item";
+                        new Button({
+                            children: `обновить чаты`,
+                            onclick: this.handleUpdateUserList.bind(this)
+                        }),
+                        ...((this.props.value ?? []).map(({
+                            id, title
+                        }) => {
+                            const className = id === this.props.activeId ? "user-chat-item" : "user-chat-item-active";
 
                             return new Button({
-                                children: name,
+                                children: `${title ?? "-"} id:${id ?? "-"}`,
                                 className,
-                                onclick: this.handleChange.bind(this, name)
+                                onclick: this.handleChange.bind(this, id)
                             });
+                        })),
+                        new NewUser({
+                            value: {
+                                title: ""
+                            }
                         })
                     ],
                     className: "user-chat-items"
@@ -37,11 +49,18 @@ export class UserList extends Component<ChatProps> {
         });
     }
 
-    protected handleChange(newNameActive: string, event: InputEvent): void {
+    protected handleChange(newActiveId: string, event: InputEvent): void {
         event.preventDefault();
 
-        const newValue = this.props.value.map((item) => ({ ...item, active: item.name === newNameActive }));
+        this.setProps({ activeId: newActiveId });
+    }
 
-        this.setProps({ value: newValue });
+    protected handleUpdateUserList(): void {
+        store.set("chats", null);
+        controller.getChats();
     }
 }
+
+export default withStore((state: any) => {
+    return { value: state.chats || [] };
+})(UserList);

@@ -1,3 +1,4 @@
+import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
 import { Button } from "../../buttons";
 
@@ -5,7 +6,7 @@ interface ChatProps extends IComponentProps {
     href?: string;
 };
 
-export class AvatarIcon extends Component<ChatProps> {
+class AvatarIcon extends Component<ChatProps> {
     constructor({ href, children }: ChatProps) {
         super({ href, children });
     }
@@ -24,3 +25,7 @@ export class AvatarIcon extends Component<ChatProps> {
         window.location.href = this.props.href ?? "/";
     }
 }
+
+export default withStore((state: any) => {
+    return { children: state.user.first_name };
+})(AvatarIcon);
