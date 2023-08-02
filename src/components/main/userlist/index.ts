@@ -1,14 +1,16 @@
+import { type IRemoveUsersFromChatData } from "../../../api/AuthAPI";
 import { controller } from "../../../controllers";
 import store from "../../../core/Store";
 import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
-import { Container } from "../../blocks/container";
-import { Button } from "../../buttons";
-import { NewUser } from "./NewUser";
+import { Info } from "../../blocks/Info";
+import { Container, ContainerColumn } from "../../blocks/container";
+import SearchUser from "./AddUser";
+import UserBlock from "./UserBlock";
 
 interface ChatProps extends IComponentProps {
     value?: Array<{ id: string | null; title: string | null }>;
-    activeId?: string;
+    activeId?: number | null;
 };
 
 class UserList extends Component<ChatProps> {
@@ -19,37 +21,30 @@ class UserList extends Component<ChatProps> {
     protected render(): Component | Component[] {
         return new Container({
             children: [
-                new Container({
+                new ContainerColumn({
                     children: [
-                        new NewUser({
-                            value: {
-                                title: ""
-                            }
+                        new Info({
+                            tag: "span",
+                            children: "пользователи чата"
                         }),
-                        ...((this.props.value ?? []).map(({
-                            id, title
-                        }) => {
-                            const className = id === this.props.activeId ? "user-chat-item" : "user-chat-item-active";
+                        new SearchUser({})
 
-                            return new Button({
-                                children: `${title ?? "-"} id:${id ?? "-"}`,
-                                className,
-                                onclick: this.handleChange.bind(this, id)
-                            });
-                        })),
-                        new Button({
-                            children: `обновить чаты`,
-                            onclick: this.handleUpdateUserList.bind(this)
-                        })
+                        // new Button({
+                        //     children: `обновить чаты`,
+                        //     onclick: this.handleUpdateUserList.bind(this)
+                        // })
                     ],
-                    className: "user-chat-items"
-                })
+                    className: "underline-container"
+                }),
+                ...((this.props.value ?? []).map(({ id, login, avatar, role }: any) => {
+                    return new UserBlock({ id, login, avatar, role, removeUser: this.handleRemoveUser.bind(this) });
+                }))
             ],
             className: "chat"
         });
     }
 
-    protected handleChange(newActiveId: string, event: InputEvent): void {
+    protected handleChange(newActiveId: number, event: InputEvent): void {
         event.preventDefault();
 
         this.setProps({ activeId: newActiveId });
@@ -57,10 +52,23 @@ class UserList extends Component<ChatProps> {
 
     protected handleUpdateUserList(): void {
         store.set("chats", null);
+
         controller.getChats();
+    }
+
+    protected handleRemoveUser(users: Omit<IRemoveUsersFromChatData, "chatId">): void {
+        const id = (store.getState() as any).activeChatId;
+
+        if (id) {
+            const data: IRemoveUsersFromChatData = { ...users, chatId: id };
+
+            controller.removeUserFromChat(data);
+        }
     }
 }
 
 export default withStore((state: any) => {
-    return { value: state.chats || [] };
+    const { activeChatId, userList } = state;
+
+    return { value: userList ? userList[activeChatId] : [], activeChatId: activeChatId || null };
 })(UserList);

@@ -1,10 +1,33 @@
 import { type IUser } from "../../api/AuthAPI";
-import { type Component } from "../component";
 import { EventBus } from "../eventbus";
 import { set } from "../utils";
 
+enum LoadingTypes {
+    chats = "chats"
+}
 export interface State {
     user?: IUser;
+    activeChatId?: number;
+    chats?: Array<{
+        avatar: string | null;
+        id: number;
+        created_by: number;
+        last_message: null | string;
+        title: string;
+        unread_count: number;
+    }>;
+    loading?: {
+        [key in LoadingTypes]: boolean;
+    };
+    userList?: Record<number, Array<{
+        avatar: string | null;
+        display_name: string | null;
+        first_name: string | null;
+        id: number;
+        role: string;
+        second_name: string;
+    }>>;
+    userSearch?: any[];
 }
 
 export type TState = Record<string, any>;

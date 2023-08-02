@@ -10,13 +10,13 @@ export enum FormMethod {
 
 interface InfoProps extends IComponentProps {
     className?: string;
-    method: FormMethod;
+    method?: FormMethod;
     action?: string;
     onSubmit?: EventListener;
 }
 
 export class Form extends Component<InfoProps> {
     constructor({ method, className, children, action }: InfoProps) {
-        super({ method, className, children, action }, Handlebars.compile(`<form class="{{{ className }}}" method="{{{ method }}}" action="{{{ action }}}">{{{ children }}}</form>`));
+        super({ method, className, children, action }, Handlebars.compile(`<form class="{{{ className }}}" {{#if method }}method="{{{ method }}}"{{/if}} {{#if action}}action="{{{ action }}}"{{/if}}>{{{ children }}}</form>`));
     }
 }

@@ -44,7 +44,7 @@ class UserForm extends Component<UserFormProps> {
             method: FormMethod.post,
             children: [
                 new Image({
-                    value: this.props.value.avatar ?? "",
+                    value: this.props.value.avatar ? `https://ya-praktikum.tech/api/v2/resources${this.props.value.avatar}` : "",
                     title: "avatar"
                 }),
                 new Input({

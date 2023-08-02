@@ -1,3 +1,4 @@
+import { TypeRequest } from "../core/http-transport";
 import { API } from "./api";
 
 export interface ISignUpData {
@@ -11,6 +12,15 @@ export interface ISignUpData {
 
 export interface ICreateChatData {
     title: string;
+}
+
+export interface IGetActiveChatUser {
+    activeChatId: number;
+}
+
+export interface IRemoveUsersFromChatData {
+    users: number[];
+    chatId: number;
 }
 
 export interface ISignInData {
@@ -75,6 +85,22 @@ export class ChatAPI extends API {
     async createChat<T>(data: ICreateChatData): Promise<IResponse<T>> {
         return await this.http.post("", data);
     }
+
+    async getChatUser<T>(data: IGetActiveChatUser): Promise<IResponse<T>> {
+        return await this.http.get(`/${data.activeChatId}/users`, { ...data, offset: 0, limit: 999 });
+    }
+
+    async removeUserFromChat<T>(data: IRemoveUsersFromChatData): Promise<IResponse<T>> {
+        return await this.http.delete(`/users`, data, TypeRequest.delete);
+    }
+
+    async addUserInChat<T>(data: any): Promise<IResponse<T>> {
+        return await this.http.put(`/users`, data);
+    }
+
+    async removeChat<T>(data: { chatId: number }): Promise<IResponse<T>> {
+        return await this.http.delete("", data);
+    }
 };
 
 export class UserAPI extends API {
@@ -83,6 +109,10 @@ export class UserAPI extends API {
     }
 
     async setAvatar<T>(data: any): Promise<IResponse<T>> {
-        return await this.http.put("profile/avatar/", data);
+        return await this.http.put("/profile/avatar", data, TypeRequest.file);
+    }
+
+    async searchUser<T>(data: { login: string }): Promise<IResponse<T>> {
+        return await this.http.post("/search", data);
     }
 };

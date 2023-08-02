@@ -5,6 +5,7 @@ import { Container } from "../blocks/container";
 import { validationFields } from "./helpers";
 import { Component, type IComponentProps } from "../../core/component";
 import { type FieldType, type MessageFormFields } from "./types";
+import { withStore } from "../../core/Store/hook";
 export interface MessageFormProps extends IComponentProps {
     value: MessageFormFields;
     errors?: Partial<MessageFormFields>;
@@ -21,55 +22,59 @@ export class MessageForm extends Component<MessageFormProps> {
     }
 
     protected render(): Component | Component[] {
-        return new Form({
-            method: FormMethod.post,
-            children: new Container({
-                children: [
-                    new Input({
-                        value: this.props.value.message ?? "",
-                        name: "message",
-                        placeholder: this.props.errors?.message ?? "новое сообщение",
-                        className: "chat-input",
-                        onChange: this.handleChange.bind(this)
-                    }),
-                    new Button({
-                        children: "отправить",
-                        onclick: this.handleFormSubmit.bind(this, "message")
-                    })
-                ],
-                className: "chat-input-container"
-            })
+        return new Container({
+            children: [
+                new Input({
+                    value: this.props.value.message ?? "",
+                    name: "message",
+                    placeholder: this.props.errors?.message ?? "новое сообщение",
+                    className: "chat-input",
+                    onChange: this.handleChange.bind(this)
+                }),
+                new Button({
+                    children: "отправить",
+                    onclick: this.handleFormSubmit2.bind(this, "message"),
+                    disable: !this.props.value.message
+                })
+            ],
+            className: "chat-input-container"
         });
     }
 
     protected handleChange(key: keyof MessageFormFields, event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
+        // const target = event.target as HTMLInputElement;
 
-        const { newValue, newErrors } = validationFields<MessageFormFields>(key, { ...this.props.value, [key]: target.value });
+        // const { newValue, newErrors } = validationFields<MessageFormFields>(key, { ...this.props.value, [key]: target.value });
 
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, ...newValue },
-            errors: { ...this.props.errors, ...newErrors }
-        });
+        // this.setProps({
+        //     ...this.props,
+        //     value: { ...this.props.value, ...newValue },
+        //     errors: { ...this.props.errors, ...newErrors }
+        // });
     }
 
-    private handleFormSubmit(event: SubmitEvent): void {
+    private handleFormSubmit2(value: string, event: SubmitEvent): void {
         event.preventDefault();
 
-        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof MessageFormFields>;
+        console.log(value, "новое сообщение");
 
-        const { newErrors, success, newValue } = validationFields<MessageFormFields>(keys, this.props.value);
+        // const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof MessageFormFields>;
 
-        if (success) {
-            console.log(newValue, " можно отправлять");
+        // const { newErrors, success, newValue } = validationFields<MessageFormFields>(keys, this.props.value);
 
-            return;
-        }
+        // if (success) {
+        //     console.log(newValue, " можно отправлять");
 
-        this.setProps({
-            ...this.props,
-            errors: newErrors
-        });
+        //     return;
+        // }
+
+        // this.setProps({
+        //     ...this.props,
+        //     errors: newErrors
+        // });
     }
 }
+
+export default withStore(state => {
+    console.log(state);
+})(MessageForm);

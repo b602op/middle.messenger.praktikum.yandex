@@ -11,15 +11,14 @@ export interface AvatarFormProps extends IComponentProps {
     file?: any;
 }
 
-const formData = new FormData();
-
 export class AvatarForm extends Component<AvatarFormProps> {
     constructor({
-        value, errors
+        value, errors, file
     }: AvatarFormProps) {
         super({
             value,
-            errors
+            errors,
+            file
         });
     }
 
@@ -28,7 +27,7 @@ export class AvatarForm extends Component<AvatarFormProps> {
             method: FormMethod.post,
             children: [
                 new Input({
-                    children: "ссылка на аватарку",
+                    children: "загрузите файл с аватаркой",
                     value: this.props.value.avatar ?? "",
                     name: "avatar",
                     onChange: this.handleChange.bind(this, "avatar"),
@@ -38,7 +37,8 @@ export class AvatarForm extends Component<AvatarFormProps> {
                 }),
                 new Button({
                     children: "отправить",
-                    onclick: this.handleFormSubmit.bind(this)
+                    onclick: this.handleFormSubmit.bind(this),
+                    disable: !this.props.file
                 })
             ]
         });
@@ -47,50 +47,30 @@ export class AvatarForm extends Component<AvatarFormProps> {
     protected handleChange(key: keyof AvatarFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const file = target.files?.item(0);
+        const fileItem = target.files?.item(0);
 
-        if (file) {
-            formData.append("avatar", file);
+        if (fileItem) {
+            const file = new FormData();
+
+            file.append("avatar", fileItem);
+
+            this.setProps({
+                ...this.props,
+                file
+            });
         }
-
-        // this.setProps({
-        //     ...this.props,
-        //     file
-        // });
-
-        // const { newValue, newErrors } = validationFields<AvatarFormFields>(key, { ...this.props.value, [key]: target.value });
-
-        // this.setProps({
-        //     ...this.props,
-        //     value: { ...this.props.value, ...newValue },
-        //     errors: { ...this.props.errors, ...newErrors }
-        // });
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        console.log(formData);
+        if (this.props.file) {
+            controller.setAvatar(this.props.file);
 
-        const test = formData.get("avatar");
-
-        console.log(test, " test");
-
-        controller.setAvatar(formData);
-
-        // const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AvatarFormFields>;
-
-        // const { newErrors, success, newValue } = validationFields<AvatarFormFields>(keys, this.props.value);
-
-        // if (success) {
-        //     console.log(newValue, " можно отправлять");
-
-        //     return;
-        // }
-
-        // this.setProps({
-        //     ...this.props,
-        //     errors: newErrors
-        // });
+            this.setProps({
+                ...this.props,
+                file: null
+            });
+        }
     }
 }

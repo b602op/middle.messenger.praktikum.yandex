@@ -1,7 +1,7 @@
 import { Info } from "../../components/blocks/Info";
 import { Container } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
-import { AvatarIcon, UserList } from "../../components/main";
+import { AvatarIcon, UserList, ChatsList } from "../../components/main";
 import { Chat } from "../../components/main/chat/Chat";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
@@ -18,6 +18,7 @@ export class ChatPage extends Component {
 
                 new Container({
                     children: [
+                        new ChatsList({}),
                         new UserList({}),
                         new Chat({
                             value: []
