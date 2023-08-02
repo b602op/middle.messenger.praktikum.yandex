@@ -89,19 +89,15 @@ class AuthController {
             .finally(() => { if (callback) callback(); });
     }
 
-    public logout(): void {
-        try {
-            this.api.logout()
-                .then((answer) => answer)
-                .catch(answer => answer)
-                .finally(console.log);
+    public logout(callback?: () => void): void {
+        this.api.logout()
+            .then((answer) => answer)
+            .catch(answer => answer)
+            .finally(() => {
+                store.set("user", undefined);
 
-            store.set("user", undefined);
-
-            Router.go(RouterPath.default);
-        } catch (error) {
-            console.error(error);
-        }
+                if (callback) callback();
+            });
     }
 }
 
