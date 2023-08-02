@@ -96,6 +96,7 @@ export class Router {
 
         if (!route) {
             const route3 = this.getRoute(RouterPath.page404);
+            console.log(route3, " route3p");
             if (route3) {
                 this.currentRoute = route3;
                 route3.render();
@@ -110,8 +111,9 @@ export class Router {
 
         const currentUser = store.getState().user;
 
-        if (!currentUser) {
+        if (!currentUser && (pathname !== RouterPath.registration)) {
             const route2 = this.getRoute(RouterPath.authorization);
+            console.log(route2, " route2");
             if (route2) {
                 this.currentRoute = route2;
                 route2.render();
@@ -119,6 +121,7 @@ export class Router {
         } else {
             if (pathname === RouterPath.authorization) {
                 const route4 = this.getRoute(RouterPath.chat);
+                console.log(route4, " route4");
                 if (route4) {
                     this.currentRoute = route4;
 
@@ -126,6 +129,7 @@ export class Router {
                 }
                 ;
             } else {
+                console.log(route, " route");
                 this.currentRoute = route;
                 route.render();
             }
