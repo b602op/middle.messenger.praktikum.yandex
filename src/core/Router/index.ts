@@ -1,5 +1,6 @@
 import store from "../Store";
 import { type Component } from "../component";
+import { redirectRote } from "./helper";
 
 function isEqual(lhs: string, rhs: string): boolean {
     return lhs === rhs;
@@ -57,6 +58,8 @@ class Route {
     }
 }
 
+export type TypeRoute = Route;
+
 export class Router {
     private static __instance: Router;
     private readonly routes: Route[] = [];
@@ -94,46 +97,16 @@ export class Router {
     private _onRoute(pathname: RouterPath): void {
         const route = this.getRoute(pathname);
 
-        if (!route) {
-            const route3 = this.getRoute(RouterPath.page404);
-            console.log(route3, " route3p");
-            if (route3) {
-                this.currentRoute = route3;
-                route3.render();
-            }
-
-            return;
-        }
-
         if (this.currentRoute && this.currentRoute !== route) {
             this.currentRoute.leave();
         }
 
-        const currentUser = store.getState().user;
+        const currentRender = (redirectRote: Route): void => {
+            this.currentRoute = redirectRote;
+            redirectRote.render();
+        };
 
-        if (!currentUser && (pathname !== RouterPath.registration)) {
-            const route2 = this.getRoute(RouterPath.authorization);
-            console.log(route2, " route2");
-            if (route2) {
-                this.currentRoute = route2;
-                route2.render();
-            }
-        } else {
-            if (pathname === RouterPath.authorization) {
-                const route4 = this.getRoute(RouterPath.chat);
-                console.log(route4, " route4");
-                if (route4) {
-                    this.currentRoute = route4;
-
-                    route4.render();
-                }
-                ;
-            } else {
-                console.log(route, " route");
-                this.currentRoute = route;
-                route.render();
-            }
-        }
+        redirectRote({ routes: this.routes, path: pathname, render: currentRender });
     }
 
     public go(pathname: RouterPath): void {

@@ -5,6 +5,7 @@ import { Form, FormMethod } from "./Form";
 import { validationFields } from "./helpers";
 import { type FieldType, type AuthorizationFormFields } from "./types";
 import { controller } from "../../controllers";
+import Router, { RouterPath } from "../../core/Router";
 
 export interface AuthorizationFormProps extends IComponentProps {
     value: AuthorizationFormFields;
@@ -72,7 +73,7 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
             controller.signIn({
                 login: newValue.login ?? "",
                 password: newValue.password ?? ""
-            });
+            }, () => { Router.go(RouterPath.profile); });
 
             return;
         }

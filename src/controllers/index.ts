@@ -20,24 +20,20 @@ class AuthController {
             .catch(console.log);
     }
 
-    public signIn(data: ISignInData): void {
-        try {
-            this.api.signIn(data)
-                .then(({ status }) => {
-                    if (status !== 200) {
-                        this.getUser();
-                        console.log("авторизован");
-                    } else {
-                        console.log("не авторизован");
-                    }
-                })
-                .catch(problems => {
-                    console.log("запрос на аутентификацию не отработал: ", problems);
-                })
-                .finally(console.log);
-        } catch (error) {
-            console.error(error);
-        }
+    public signIn(data: ISignInData, callback?: () => void): void {
+        this.api.signIn(data)
+            .then(({ status }) => {
+                if (status !== 200) {
+                    this.getUser();
+                    console.log("авторизован");
+                } else {
+                    console.log("не авторизован");
+                }
+            })
+            .catch(problems => {
+                console.log("запрос на аутентификацию не отработал: ", problems);
+            })
+            .finally(() => { if (callback) callback(); });
     }
 
     public signUp(data: ISignUpData): void {
@@ -80,24 +76,17 @@ class AuthController {
             });
     }
 
-    public getUser(): void {
-        console.log("getUser ок");
-        try {
-            this.api.getUser()
-                .then(({ data, status }) => {
-                    if (status === 200) {
-                        store.set("user", data);
-
-                        Router.go(RouterPath.profile);
-                    } else {
-                        console.error(status, " запрос на юзера не 200");
-                    }
-                })
-                .catch(answer => answer)
-                .finally(console.log);
-        } catch (problems) {
-            console.error("запрос на юзера не отработал: ", problems);
-        }
+    public getUser(callback?: () => void): void {
+        this.api.getUser()
+            .then(({ data, status }) => {
+                if (status === 200) {
+                    store.set("user", data);
+                } else {
+                    console.error("status user fetch: ", status);
+                }
+            })
+            .catch(answer => answer)
+            .finally(() => { if (callback) callback(); });
     }
 
     public logout(): void {

@@ -5,9 +5,7 @@ export function withStore<T extends Record<string, any>>(mapStateToProps: (state
     return (CurrentComponent: typeof Component<T>) => {
         return class extends CurrentComponent {
             constructor(props: T) {
-                const newProps = { ...props, ...mapStateToProps(store.getState()) };
-                console.log(newProps, "newProps");
-                super(newProps);
+                super({ ...props, ...mapStateToProps(store.getState()) });
 
                 store.on(StorageEvent.UpdateState, () => {
                     const propsFromState = mapStateToProps(store.getState());
