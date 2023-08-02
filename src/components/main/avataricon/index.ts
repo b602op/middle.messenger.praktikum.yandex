@@ -28,5 +28,5 @@ class AvatarIcon extends Component<ChatProps> {
 }
 
 export default withStore((state: any) => {
-    return { children: state.user.first_name };
+    return { children: state.user?.first_name || "" };
 })(AvatarIcon);
