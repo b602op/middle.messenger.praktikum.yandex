@@ -23,12 +23,7 @@ class AuthController {
     public signIn(data: ISignInData, callback?: () => void): void {
         this.api.signIn(data)
             .then(({ status }) => {
-                if (status !== 200) {
-                    this.getUser();
-                    console.log("авторизован");
-                } else {
-                    console.log("не авторизован");
-                }
+                console.info("статус sign fetch", status);
             })
             .catch(problems => {
                 console.log("запрос на аутентификацию не отработал: ", problems);
@@ -81,9 +76,8 @@ class AuthController {
             .then(({ data, status }) => {
                 if (status === 200) {
                     store.set("user", data);
-                } else {
-                    console.error("status user fetch: ", status);
                 }
+                console.info("статус user fetch: ", status);
             })
             .catch(answer => answer)
             .finally(() => { if (callback) callback(); });
