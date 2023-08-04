@@ -76,15 +76,12 @@ export class HTTPTransport {
             newData = await response.data.json();
         }
 
+        if (response && !newData) {
+            newData = await response.json();
+        }
+
         return { status, data: newData, response };
     };
-
-    // public async put<Response = void>(path: string, data: unknown): Promise<Response> {
-    //     return await this.request<Response>(this.endpoint + path, {
-    //         method: Method.Put,
-    //         data
-    //     });
-    // }
 
     // public async patch<Response = void>(path: string, data: unknown): Promise<Response> {
     //     return await this.request<Response>(this.endpoint + path, {

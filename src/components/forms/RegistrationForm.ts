@@ -5,6 +5,7 @@ import { Form, FormMethod } from "./Form";
 import { validationFields } from "./helpers";
 import { controller } from "../../controllers";
 import { type FieldType, type RegistrationFormFields } from "./types";
+import Router, { RouterPath } from "../../core/Router";
 
 export interface RegistrationFormProps extends IComponentProps {
     value: RegistrationFormFields;
@@ -116,9 +117,11 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                 email: newValue.email ?? "",
                 password: newValue.password ?? "",
                 phone: newValue.phone ?? ""
+            }, () => {
+                controller.getUser();
+                Router.go(RouterPath.profile);
             });
 
-            controller.getUser();
             return;
         }
 

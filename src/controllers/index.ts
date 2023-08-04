@@ -45,13 +45,13 @@ class AuthController {
             .finally(() => { if (callback) callback(); });
     }
 
-    public signUp(data: ISignUpData): void {
+    public signUp(data: ISignUpData, callback?: () => void): void {
         this.api.signup(data)
             .then(({ data, status }) => {
                 console.info(data, status);
             })
             .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
-            .finally(console.info);
+            .finally(() => { if (callback) callback(); });
     }
 
     public getChats(): void {
@@ -65,7 +65,20 @@ class AuthController {
                 }
             })
             .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
-            .finally(console.info);
+            .finally(() => { store.set("loading.chats", false); });
+    }
+
+    public changeProfile(data: any): void {
+        this.apiUser.changeProfile(data)
+            .then((answer) => {
+                const { data, status } = answer;
+                if (status === 200) {
+                    console.log(answer, " answeransweranswer?");
+                    store.set("user", data);
+                }
+            })
+            .catch((problems: any) => { console.error("запрос на юзера не отработал: ", problems); })
+            .finally(() => { store.set("loading.chats", false); });
     }
 
     public removeChat(chatId: number): void {

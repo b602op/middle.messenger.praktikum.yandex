@@ -1,3 +1,4 @@
+import { controller } from "../../controllers";
 import { withStore } from "../../core/Store/hook";
 import { Component, type IComponentProps } from "../../core/component";
 import { Image } from "../blocks";
@@ -12,23 +13,6 @@ export interface UserFormProps extends IComponentProps {
     value: UserFormFields;
     errors?: Partial<UserFormFields>;
 }
-
-const defaultUser: UserFormFields = {
-    avatar: null,
-    display_name: null,
-    first_name: null,
-    id: null,
-    login: null,
-    second_name: null,
-    password: null,
-    password2: null
-    // login: null,
-    // display_name: null,
-    // secondName: null,
-    // phone: null,
-    // password: null,
-    // firstName: null
-};
 
 class UserForm extends Component<UserFormProps> {
     constructor({
@@ -59,7 +43,7 @@ class UserForm extends Component<UserFormProps> {
                     children: "Имя",
                     value: this.props.value.first_name ?? "",
                     name: "name",
-                    onChange: this.handleChange.bind(this, "firstName"),
+                    onChange: this.handleChange.bind(this, "first_name"),
                     placeholder: "Имя",
                     error: this.props.errors?.first_name
                 }),
@@ -67,9 +51,17 @@ class UserForm extends Component<UserFormProps> {
                     children: "Имя в чате",
                     value: this.props.value.display_name ?? "",
                     name: "display_name",
-                    onChange: this.handleChange.bind(this, "displayName"),
+                    onChange: this.handleChange.bind(this, "display_name"),
                     placeholder: "Имя в чате",
                     error: this.props.errors?.display_name
+                }),
+                new Input({
+                    children: "Почта",
+                    value: this.props.value.email ?? "",
+                    name: "email",
+                    onChange: this.handleChange.bind(this, "email"),
+                    placeholder: "Почта",
+                    error: this.props.errors?.email
                 }),
                 new Input({
                     children: "Фамилия",
@@ -78,22 +70,6 @@ class UserForm extends Component<UserFormProps> {
                     onChange: this.handleChange.bind(this, "secondName"),
                     placeholder: "Фамилия",
                     error: this.props.errors?.second_name
-                }),
-                new Input({
-                    children: "Пароль",
-                    value: this.props.value.password ?? "",
-                    name: "password",
-                    onChange: this.handleChange.bind(this, "password"),
-                    placeholder: "Пароль",
-                    error: this.props.errors?.password
-                }),
-                new Input({
-                    children: "Пароль(ещё раз)",
-                    value: "",
-                    name: "password2",
-                    onChange: this.handleChange.bind(this),
-                    placeholder: "Пароль",
-                    error: this.props.errors?.password2
                 }),
                 new Button({
                     children: "изменить данные",
@@ -123,7 +99,16 @@ class UserForm extends Component<UserFormProps> {
         const { newErrors, success, newValue } = validationFields<UserFormFields>(keys, this.props.value);
 
         if (success) {
-            console.log(newValue, " можно отправлять");
+            const test: Omit<UserFormFields, "id" | "avatar" | "password"> = {
+                first_name: newValue.first_name ?? "",
+                second_name: newValue.second_name ?? "",
+                display_name: newValue.display_name ?? "",
+                email: newValue.email ?? "",
+                phone: newValue.phone ?? "",
+                login: newValue.login ?? ""
+            };
+
+            controller.changeProfile(test);
 
             return;
         }
@@ -136,5 +121,29 @@ class UserForm extends Component<UserFormProps> {
 }
 
 export default withStore((state) => {
-    return { value: { ...defaultUser, ...state.user } };
+    const {
+        avatar = null,
+        display_name: displayName = null,
+        first_name: firstName = null,
+        id = null,
+        login = null,
+        second_name: secondName = null,
+        email = null,
+        phone = null
+    } = state.user ?? {};
+
+    console.log(state, " state");
+
+    return {
+        value: {
+            avatar,
+            display_name: displayName,
+            first_name: firstName,
+            id,
+            login,
+            second_name: secondName,
+            email,
+            phone
+        }
+    };
 })(UserForm);

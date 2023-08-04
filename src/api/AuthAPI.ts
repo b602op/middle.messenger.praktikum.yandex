@@ -115,6 +115,10 @@ export class UserAPI extends API {
     async searchUser<T>(data: { login: string }): Promise<IResponse<T>> {
         return await this.http.post("/search", data);
     }
+
+    async changeProfile<T>(data: any): Promise<IResponse<T>> {
+        return await this.http.put("/profile", data);
+    }
 };
 
 export const isChatsTokenRequestData = (value: unknown): value is { id: number } => (
