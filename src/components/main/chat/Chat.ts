@@ -33,7 +33,7 @@ class Chat extends Component<ChatProps> {
                     ],
                     className: "chat-items"
                 }),
-                new MessageForm({ value: { message: null } })
+                new MessageForm({})
             ],
             className: "chat"
         });

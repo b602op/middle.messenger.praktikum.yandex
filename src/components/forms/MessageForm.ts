@@ -1,25 +1,17 @@
 import { Button } from "../buttons";
 import { Input } from "../inputs";
-import { Form, FormMethod } from "./Form";
 import { Container } from "../blocks/container";
-import { validationFields } from "./helpers";
 import { Component, type IComponentProps } from "../../core/component";
-import { type FieldType, type MessageFormFields } from "./types";
-import { withStore } from "../../core/Store/hook";
 import socket from "../../core/socket";
 export interface MessageFormProps extends IComponentProps {
-    text: string;
-    errors?: Partial<MessageFormFields>;
+    text?: string;
 }
 
 export class MessageForm extends Component<MessageFormProps> {
     constructor({
-        text, errors
+        text
     }: MessageFormProps) {
-        super({
-            text,
-            errors
-        });
+        super({ text });
     }
 
     protected render(): Component | Component[] {
@@ -28,7 +20,7 @@ export class MessageForm extends Component<MessageFormProps> {
                 new Input({
                     value: this.props.text ?? "",
                     name: "message",
-                    placeholder: this.props.errors?.message ?? "новое сообщение",
+                    placeholder: "новое сообщение",
                     className: "chat-input",
                     onChange: this.handleChange.bind(this)
                 }),
@@ -63,6 +55,4 @@ export class MessageForm extends Component<MessageFormProps> {
     }
 }
 
-export default withStore(state => {
-    console.log(state);
-})(MessageForm);
+export default MessageForm;

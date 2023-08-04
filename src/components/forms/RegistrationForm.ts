@@ -45,7 +45,7 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                     children: "Имя",
                     value: this.props.value.first_name ?? "",
                     name: "first_name",
-                    onChange: this.handleChange.bind(this, "firstName"),
+                    onChange: this.handleChange.bind(this, "first_name"),
                     placeholder: "Имя",
                     error: this.props.errors?.first_name
                 }),
@@ -117,6 +117,8 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                 password: newValue.password ?? "",
                 phone: newValue.phone ?? ""
             });
+
+            controller.getUser();
             return;
         }
 
