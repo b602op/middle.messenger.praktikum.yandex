@@ -2,6 +2,7 @@ import { controller } from "../../../controllers";
 import store from "../../../core/Store";
 import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
+import socket from "../../../core/socket";
 import { Info } from "../../blocks/Info";
 import { Container, ContainerRow } from "../../blocks/container";
 import { Button } from "../../buttons";
@@ -67,6 +68,8 @@ class ChatList extends Component<ChatProps> {
         store.set("activeChatId", newActiveId);
 
         controller.getChatUser(newActiveId);
+
+        socket.connect(newActiveId);
     }
 
     protected handleRemoveChat(newActiveId: number, event: InputEvent): void {

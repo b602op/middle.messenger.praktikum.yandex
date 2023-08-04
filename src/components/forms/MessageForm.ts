@@ -6,17 +6,18 @@ import { validationFields } from "./helpers";
 import { Component, type IComponentProps } from "../../core/component";
 import { type FieldType, type MessageFormFields } from "./types";
 import { withStore } from "../../core/Store/hook";
+import socket from "../../core/socket";
 export interface MessageFormProps extends IComponentProps {
-    value: MessageFormFields;
+    text: string;
     errors?: Partial<MessageFormFields>;
 }
 
 export class MessageForm extends Component<MessageFormProps> {
     constructor({
-        value, errors
+        text, errors
     }: MessageFormProps) {
         super({
-            value,
+            text,
             errors
         });
     }
@@ -25,7 +26,7 @@ export class MessageForm extends Component<MessageFormProps> {
         return new Container({
             children: [
                 new Input({
-                    value: this.props.value.message ?? "",
+                    value: this.props.text ?? "",
                     name: "message",
                     placeholder: this.props.errors?.message ?? "новое сообщение",
                     className: "chat-input",
@@ -33,45 +34,32 @@ export class MessageForm extends Component<MessageFormProps> {
                 }),
                 new Button({
                     children: "отправить",
-                    onclick: this.handleFormSubmit2.bind(this, "message"),
-                    disable: !this.props.value.message
+                    onclick: this.sendMassage.bind(this),
+                    disable: !this.props.text
                 })
             ],
             className: "chat-input-container"
         });
     }
 
-    protected handleChange(key: keyof MessageFormFields, event: InputEvent): void {
-        // const target = event.target as HTMLInputElement;
+    protected handleChange(event: InputEvent): void {
+        const target = event.target as HTMLInputElement;
 
-        // const { newValue, newErrors } = validationFields<MessageFormFields>(key, { ...this.props.value, [key]: target.value });
+        const text = target.value;
 
-        // this.setProps({
-        //     ...this.props,
-        //     value: { ...this.props.value, ...newValue },
-        //     errors: { ...this.props.errors, ...newErrors }
-        // });
+        if (!text) return;
+
+        this.setProps({ text });
     }
 
-    private handleFormSubmit2(value: string, event: SubmitEvent): void {
+    private sendMassage(event: SubmitEvent): void {
         event.preventDefault();
 
-        console.log(value, "новое сообщение");
+        const message = this.props.text;
 
-        // const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof MessageFormFields>;
-
-        // const { newErrors, success, newValue } = validationFields<MessageFormFields>(keys, this.props.value);
-
-        // if (success) {
-        //     console.log(newValue, " можно отправлять");
-
-        //     return;
-        // }
-
-        // this.setProps({
-        //     ...this.props,
-        //     errors: newErrors
-        // });
+        if (message) {
+            socket.sendMessage(message);
+        }
     }
 }
 

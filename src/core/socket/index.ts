@@ -1,5 +1,6 @@
 import { controller } from "../../controllers";
 import store, { StorageEvent } from "../Store";
+import { compareMessagesByDate, hasMessage } from "./helpers";
 
 const CHATS_WWS = "wss://ya-praktikum.tech/ws/chats/{userId}/{chatId}/{token}/";
 
@@ -24,12 +25,17 @@ export class Socket {
 
     connect(chatId: number): void {
         this.disconnect();
+
         this._chatId = chatId;
+
         store.set("chatsToken", null);
+
         controller.getToken({ id: chatId });
+
         if (!store.getState().user) {
             controller.getUser();
         }
+
         store.on(StorageEvent.UpdateState, this.createSocket.bind(this));
     }
 
@@ -38,14 +44,16 @@ export class Socket {
 
         const token = chatsToken?.data?.token;
 
-        const userId = user?.data?.id;
+        const userId = user?.id;
+
+        if (!userId) return;
 
         if (this._chatId && token && userId && (this._token !== token || this._userId !== userId)) {
             this._userId = userId;
             this._token = token;
             this._socket = new WebSocket(
                 CHATS_WWS
-                    .replace("{userId}", userId)
+                    .replace("{userId}", userId.toString())
                     .replace("{chatId}", this._chatId.toString())
                     .replace("{token}", token)
             );
@@ -63,8 +71,10 @@ export class Socket {
                 this._socket.addEventListener("message", event => {
                     const data = JSON.parse(event.data);
                     if (data.type === "message") {
+                        const { messages = [] } = store.getState();
+
                         store.set("messages", [
-                            ...store.getState().messages,
+                            ...messages,
                             data
                         ]);
                     } else {

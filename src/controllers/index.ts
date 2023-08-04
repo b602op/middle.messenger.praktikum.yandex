@@ -1,4 +1,4 @@
-import { AuthAPI, ChatAPI, UserAPI, type ISignInData, type ISignUpData, type IRemoveUsersFromChatData } from "../api/AuthAPI";
+import { AuthAPI, ChatAPI, UserAPI, type ISignInData, type ISignUpData, type IRemoveUsersFromChatData, ChatsTokenAPI } from "../api/AuthAPI";
 import store from "../core/Store";
 
 export interface IResponse<T = unknown> {
@@ -10,6 +10,7 @@ class AuthController {
     private readonly api = new AuthAPI();
     private readonly apiChat = new ChatAPI();
     private readonly apiUser = new UserAPI();
+    private readonly apiChatsTokenApi = new ChatsTokenAPI();
 
     public setAvatar(data: FormData, callback?: () => void): void {
         this.apiUser.setAvatar(data)
@@ -160,6 +161,22 @@ class AuthController {
                 // if (status === 200) {
                 //     store.set("userList", { ...test, [activeChatId]: data });
                 // }
+            })
+            .catch(console.error)
+            .finally(console.info);
+    }
+
+    public getToken(data: { id: number }): void {
+        store.set("chatsToken.loading", true);
+        store.set("chatsToken.errors", null);
+
+        this.apiChatsTokenApi.getToken(data)
+            .then(({ status, data }) => {
+                console.log(status, data, " removeUserFromChat");
+
+                if (status === 200) {
+                    store.set("chatsToken.data", data);
+                }
             })
             .catch(console.error)
             .finally(console.info);

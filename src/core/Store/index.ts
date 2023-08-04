@@ -5,6 +5,17 @@ import { set } from "../utils";
 enum LoadingTypes {
     chats = "chats"
 }
+
+export interface IMessage {
+    id: number;
+    user_id: number;
+    chat_id: number;
+    type: string;
+    time: string;
+    content: string;
+    is_read: boolean;
+    file: string | null;
+}
 export interface State {
     user?: IUser;
     activeChatId?: number;
@@ -28,6 +39,12 @@ export interface State {
         second_name: string;
     }>>;
     userSearch?: any[];
+    chatsToken?: {
+        data?: {
+            token: string;
+        };
+    };
+    messages?: IMessage[];
 }
 
 export type TState = Record<string, any>;

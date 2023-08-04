@@ -116,3 +116,24 @@ export class UserAPI extends API {
         return await this.http.post("/search", data);
     }
 };
+
+export const isChatsTokenRequestData = (value: unknown): value is { id: number } => (
+    typeof value === "object" &&
+    value &&
+    Object.prototype.hasOwnProperty.call(value, "id") &&
+    Object.keys(value).length === 1
+);
+
+export class ChatsTokenAPI extends API {
+    constructor() {
+        super("/chats/token");
+    }
+
+    async getToken<T = { id: number }>(data: T): Promise<IResponse<Array<{ data: { token: string } }>>> {
+        if (!isChatsTokenRequestData(data)) {
+            throw new Error("Expected IChatsTokenRequestData type");
+        }
+
+        return await this.http.post(`/${data.id.toString()}`);
+    }
+}
