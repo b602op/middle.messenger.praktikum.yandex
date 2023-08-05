@@ -134,13 +134,6 @@ class UserForm extends Component<UserFormProps> {
                 good: () => { alert("успешно сохранили"); },
                 bad: () => { alert("не получилось сохранить"); }
             });
-
-            this.setProps({
-                ...this.props,
-                errors: newErrors
-            });
-
-            return;
         }
 
         this.setProps({
