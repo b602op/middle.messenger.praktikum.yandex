@@ -145,8 +145,6 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
     protected handleChange(key: keyof RegistrationFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        console.log({ ...(this.props.value ?? {}), [key]: target.value });
-
         const { newValue, newErrors } = validationFields<any>(key, {
             [key]: target.value
         });

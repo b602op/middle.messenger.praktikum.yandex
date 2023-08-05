@@ -62,8 +62,6 @@ export class HTTPTransport {
             newData = response?.ok;
         }
 
-        console.log({ status, data: newData, response });
-
         return { status, data: newData, response };
     };
 

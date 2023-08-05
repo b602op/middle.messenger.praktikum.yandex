@@ -19,7 +19,6 @@ class UserList extends Component<ChatProps> {
     }
 
     protected getUsers(): Component[] {
-        console.log(this.props.activeChatId, " this.props.activeChatId?");
         if (!this.props.value?.length || !this.props.activeChatId) {
             return [];
         }
@@ -67,8 +66,6 @@ class UserList extends Component<ChatProps> {
 
 export default withStore((state: any) => {
     const { activeChatId, userList } = state;
-
-    console.log(state, " state");
 
     return { value: userList ? userList[activeChatId] : [], activeChatId: activeChatId || null };
 })(UserList);
