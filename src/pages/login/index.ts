@@ -13,7 +13,19 @@ export class LoginPage extends Component {
                     children: "авторизация",
                     tag: "h1"
                 }),
-                new AuthorizationForm({ value: { login: "edik159", password: "PORNOv10" } }),
+                new Info({
+                    children: "для тестирования",
+                    tag: "span"
+                }),
+                new Info({
+                    children: "Login: edik159",
+                    tag: "span"
+                }),
+                new Info({
+                    children: "pass: PORNOv11",
+                    tag: "span"
+                }),
+                new AuthorizationForm({}),
                 new Button({
                     onclick: this.handleToRegistration.bind(this),
                     children: "регистрация"

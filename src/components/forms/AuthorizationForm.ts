@@ -2,22 +2,25 @@ import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { validationFields } from "./helpers";
-import { type FieldType, type AuthorizationFormFields } from "./types";
+import { type AuthorizationFormFields } from "./types";
 import { controller } from "../../controllers";
 import Router, { RouterPath } from "../../core/Router";
 
 export interface AuthorizationFormProps extends IComponentProps {
-    value: AuthorizationFormFields;
+    login?: string | null;
+    password?: string | null;
     errors?: Partial<AuthorizationFormFields>;
 }
 
 export class AuthorizationForm extends Component<AuthorizationFormProps> {
     constructor({
-        value, errors
+        login,
+        password,
+        errors
     }: AuthorizationFormProps) {
         super({
-            value,
+            login,
+            password,
             errors
         });
     }
@@ -28,17 +31,19 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
             children: [
                 new Input({
                     children: "логин",
-                    value: this.props.value.login ?? "",
+                    value: this.props.login ?? "",
                     name: "login",
-                    onChange: this.handleChange.bind(this, "login"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "login"),
+                    onchange: this.handleOnKeyPress.bind(this, "login"),
                     placeholder: "login",
                     error: this.props.errors?.login
                 }),
                 new Input({
                     children: "пароль",
-                    value: this.props.value.password ?? "",
+                    value: this.props.password ?? "",
                     name: "password",
-                    onChange: this.handleChange.bind(this, "password"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "password"),
+                    onchange: this.handleOnKeyPress.bind(this, "password"),
                     placeholder: "password",
                     error: this.props.errors?.password
                 }),
@@ -50,37 +55,36 @@ export class AuthorizationForm extends Component<AuthorizationFormProps> {
         });
     }
 
-    protected handleChange(key: keyof AuthorizationFormFields, event: InputEvent): void {
+    protected defaultValue: AuthorizationFormFields = {
+        login: this.props.errors?.login ?? null,
+        password: this.props.errors?.password ?? null
+    };
+
+    protected handleOnKeyPress(key: keyof AuthorizationFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const { newValue, newErrors } = validationFields<AuthorizationFormFields>(key, { ...this.props.value, [key]: target.value });
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, ...newValue },
-            errors: { ...this.props.errors, ...newErrors }
-        });
+        this.defaultValue[key] = target.value;
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof AuthorizationFormFields>;
+        const currentData = {
+            login: this.defaultValue.login ?? "",
+            password: this.defaultValue.password ?? ""
+        };
 
-        const { newErrors, success, newValue } = validationFields<AuthorizationFormFields>(keys, this.props.value);
-
-        if (success) {
-            controller.signIn({
-                login: newValue.login ?? "",
-                password: newValue.password ?? ""
-            }, () => { Router.go(RouterPath.profile); });
-
-            return;
-        }
-
-        this.setProps({
-            ...this.props,
-            errors: newErrors
+        controller.signIn(currentData, {
+            good: () => { Router.go(RouterPath.profile); },
+            bad: ({ status, data }: { status: number; data: { reason: string } }) => {
+                this.setProps({
+                    ...currentData,
+                    errors: {
+                        login: `статус ошибки ${status}`,
+                        password: data?.reason
+                    }
+                });
+            }
         });
     }
 }

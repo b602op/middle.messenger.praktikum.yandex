@@ -30,7 +30,7 @@ export class AvatarForm extends Component<AvatarFormProps> {
                     children: "загрузите файл с аватаркой",
                     value: this.props.value.avatar ?? "",
                     name: "avatar",
-                    onChange: this.handleChange.bind(this, "avatar"),
+                    onchange: this.handleChange.bind(this, "avatar"),
                     placeholder: "url",
                     error: this.props.errors?.avatar,
                     type: "file"

@@ -2,6 +2,7 @@ import { controller } from "../../controllers";
 import { withStore } from "../../core/Store/hook";
 import { Component, type IComponentProps } from "../../core/component";
 import { Image } from "../blocks";
+import { Info } from "../blocks/Info";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
@@ -10,7 +11,7 @@ import { type FieldType } from "./types";
 import { type UserFormFields } from "./types/fields";
 
 export interface UserFormProps extends IComponentProps {
-    value: UserFormFields;
+    value: Partial<UserFormFields>;
     errors?: Partial<UserFormFields>;
 }
 
@@ -28,14 +29,18 @@ class UserForm extends Component<UserFormProps> {
             method: FormMethod.post,
             children: [
                 new Image({
-                    value: this.props.value.avatar ? `https://ya-praktikum.tech/api/v2/resources${this.props.value.avatar}` : "",
+                    value: this.props.value.avatar,
                     title: "avatar"
+                }),
+                new Info({
+                    tag: "span",
+                    children: `id: ${this.props.value.id ?? "-"} `
                 }),
                 new Input({
                     children: "Логин",
                     value: this.props.value.login ?? "",
                     name: "login",
-                    onChange: this.handleChange.bind(this, "login"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "login"),
                     placeholder: "Логин",
                     error: this.props.errors?.login
                 }),
@@ -43,7 +48,7 @@ class UserForm extends Component<UserFormProps> {
                     children: "Имя",
                     value: this.props.value.first_name ?? "",
                     name: "name",
-                    onChange: this.handleChange.bind(this, "first_name"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "first_name"),
                     placeholder: "Имя",
                     error: this.props.errors?.first_name
                 }),
@@ -51,7 +56,7 @@ class UserForm extends Component<UserFormProps> {
                     children: "Имя в чате",
                     value: this.props.value.display_name ?? "",
                     name: "display_name",
-                    onChange: this.handleChange.bind(this, "display_name"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "display_name"),
                     placeholder: "Имя в чате",
                     error: this.props.errors?.display_name
                 }),
@@ -59,7 +64,7 @@ class UserForm extends Component<UserFormProps> {
                     children: "Почта",
                     value: this.props.value.email ?? "",
                     name: "email",
-                    onChange: this.handleChange.bind(this, "email"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "email"),
                     placeholder: "Почта",
                     error: this.props.errors?.email
                 }),
@@ -67,9 +72,17 @@ class UserForm extends Component<UserFormProps> {
                     children: "Фамилия",
                     value: this.props.value.second_name ?? "",
                     name: "second_name",
-                    onChange: this.handleChange.bind(this, "secondName"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "secondName"),
                     placeholder: "Фамилия",
                     error: this.props.errors?.second_name
+                }),
+                new Input({
+                    children: "Телефон",
+                    value: this.props.value.phone ?? "",
+                    name: "phone",
+                    onkeypress: this.handleOnKeyPress.bind(this, "phone"),
+                    placeholder: "Телефон",
+                    error: this.props.errors?.phone
                 }),
                 new Button({
                     children: "изменить данные",
@@ -79,27 +92,32 @@ class UserForm extends Component<UserFormProps> {
         });
     }
 
-    protected handleChange(key: keyof UserFormFields, event: InputEvent): void {
+    public defaultValue: UserFormFields = {
+        avatar: this.props.value.avatar ?? null,
+        display_name: this.props.value.display_name ?? null,
+        first_name: this.props.value.first_name ?? null,
+        id: this.props.value.id ?? null,
+        login: this.props.value.login ?? null,
+        second_name: this.props.value.second_name ?? null,
+        email: this.props.value.email ?? null,
+        phone: this.props.value.phone ?? null
+    };
+
+    protected handleOnKeyPress(key: keyof UserFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        const { newValue, newErrors } = validationFields<UserFormFields>(key, { ...this.props.value, [key]: target.value });
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, ...newValue },
-            errors: { ...this.props.errors, ...newErrors }
-        });
+        this.defaultValue[key] = target.value;
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const keys: FieldType[] = Object.keys(this.props.value) as Array<keyof UserFormFields>;
+        const keys: FieldType[] = Object.keys(this.defaultValue) as Array<keyof UserFormFields>;
 
-        const { newErrors, success, newValue } = validationFields<UserFormFields>(keys, this.props.value);
+        const { newErrors, success, newValue } = validationFields<UserFormFields>(keys, this.defaultValue);
 
         if (success) {
-            const test: Omit<UserFormFields, "id" | "avatar" | "password"> = {
+            const profileData: Omit<UserFormFields, "id" | "avatar" | "password"> = {
                 first_name: newValue.first_name ?? "",
                 second_name: newValue.second_name ?? "",
                 display_name: newValue.display_name ?? "",
@@ -108,13 +126,14 @@ class UserForm extends Component<UserFormProps> {
                 login: newValue.login ?? ""
             };
 
-            controller.changeProfile(test);
+            controller.changeProfile(profileData);
 
             return;
         }
 
         this.setProps({
             ...this.props,
+            value: newValue,
             errors: newErrors
         });
     }
@@ -131,8 +150,6 @@ export default withStore((state) => {
         email = null,
         phone = null
     } = state.user ?? {};
-
-    console.log(state, " state");
 
     return {
         value: {

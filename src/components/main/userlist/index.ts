@@ -6,48 +6,48 @@ import { Component, type IComponentProps } from "../../../core/component";
 import { Info } from "../../blocks/Info";
 import { Container, ContainerColumn } from "../../blocks/container";
 import SearchUser from "./AddUser";
-import UserBlock from "./UserBlock";
+import UserBlock, { type UserInformation } from "./UserBlock";
 
 interface ChatProps extends IComponentProps {
-    value?: Array<{ id: string | null; title: string | null }>;
-    activeId?: number | null;
+    value: UserInformation[];
+    activeChatId: number | null;
 };
 
 class UserList extends Component<ChatProps> {
-    constructor({ value }: ChatProps) {
-        super({ value });
+    constructor({ value, activeChatId }: ChatProps) {
+        super({ value, activeChatId });
+    }
+
+    protected getUsers(): Component[] {
+        console.log(this.props.activeChatId, " this.props.activeChatId?");
+        if (!this.props.value?.length || !this.props.activeChatId) {
+            return [];
+        }
+
+        const users = this.props.value.map((value: UserInformation) => (
+            new UserBlock({ value, removeUser: this.handleRemoveUser.bind(this) })
+        ));
+
+        return [
+            new Info({
+                tag: "span",
+                children: `пользователи ЧАТА - id:${this.props.activeChatId}`
+            }),
+            ...users
+        ];
     }
 
     protected render(): Component | Component[] {
         return new Container({
             children: [
                 new ContainerColumn({
-                    children: [
-                        new Info({
-                            tag: "span",
-                            children: "пользователи чата"
-                        }),
-                        new SearchUser({})
-
-                        // new Button({
-                        //     children: `обновить чаты`,
-                        //     onclick: this.handleUpdateUserList.bind(this)
-                        // })
-                    ],
+                    children: new SearchUser({}),
                     className: "underline-container"
                 }),
-                ...((this.props.value ?? []).map(({ id, login, avatar, role }: any) => {
-                    return new UserBlock({ id, login, avatar, role, removeUser: this.handleRemoveUser.bind(this) });
-                }))
+                ...this.getUsers()
             ],
             className: "chat"
         });
-    }
-
-    protected handleChange(newActiveId: number, event: InputEvent): void {
-        event.preventDefault();
-
-        this.setProps({ activeId: newActiveId });
     }
 
     protected handleUpdateUserList(): void {
@@ -57,10 +57,8 @@ class UserList extends Component<ChatProps> {
     }
 
     protected handleRemoveUser(users: Omit<IRemoveUsersFromChatData, "chatId">): void {
-        const id = (store.getState() as any).activeChatId;
-
-        if (id) {
-            const data: IRemoveUsersFromChatData = { ...users, chatId: id };
+        if (this.props.activeChatId) {
+            const data: IRemoveUsersFromChatData = { ...users, chatId: this.props.activeChatId };
 
             controller.removeUserFromChat(data);
         }
@@ -69,6 +67,8 @@ class UserList extends Component<ChatProps> {
 
 export default withStore((state: any) => {
     const { activeChatId, userList } = state;
+
+    console.log(state, " state");
 
     return { value: userList ? userList[activeChatId] : [], activeChatId: activeChatId || null };
 })(UserList);

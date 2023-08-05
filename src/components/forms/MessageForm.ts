@@ -3,15 +3,17 @@ import { Input } from "../inputs";
 import { Container } from "../blocks/container";
 import { Component, type IComponentProps } from "../../core/component";
 import socket from "../../core/socket";
+import { withStore } from "../../core/Store/hook";
 export interface MessageFormProps extends IComponentProps {
     text?: string;
+    activeChatId?: number;
 }
 
 export class MessageForm extends Component<MessageFormProps> {
     constructor({
-        text
+        text, activeChatId
     }: MessageFormProps) {
-        super({ text });
+        super({ text, activeChatId });
     }
 
     protected render(): Component | Component[] {
@@ -22,12 +24,13 @@ export class MessageForm extends Component<MessageFormProps> {
                     name: "message",
                     placeholder: "новое сообщение",
                     className: "chat-input",
-                    onChange: this.handleChange.bind(this)
+                    onkeypress: this.handlePressKey.bind(this),
+                    onchange: this.handleChange.bind(this)
                 }),
                 new Button({
                     children: "отправить",
                     onclick: this.sendMassage.bind(this),
-                    disable: !this.props.text
+                    disable: !this.props.activeChatId
                 })
             ],
             className: "chat-input-container"
@@ -35,18 +38,23 @@ export class MessageForm extends Component<MessageFormProps> {
     }
 
     protected handleChange(event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
-
-        const text = target.value;
-
-        if (!text) return;
-
-        this.setProps({ text });
-    }
-
-    private sendMassage(event: SubmitEvent): void {
         event.preventDefault();
 
+        const target = event.target as HTMLInputElement;
+
+        this.setProps({ text: target.value ?? "" });
+    }
+
+    protected handlePressKey(props: any): void {
+        const { key } = props;
+
+        if (key === "Enter") {
+            this.sendMassage();
+            this.setProps({ text: "" });
+        }
+    }
+
+    private sendMassage(): void {
         const message = this.props.text;
 
         if (message) {
@@ -55,4 +63,7 @@ export class MessageForm extends Component<MessageFormProps> {
     }
 }
 
-export default MessageForm;
+export default withStore(state => {
+    const { activeChatId } = state;
+    return { activeChatId };
+})(MessageForm);

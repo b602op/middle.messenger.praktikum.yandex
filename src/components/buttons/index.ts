@@ -10,6 +10,7 @@ interface ButtonProps extends IComponentProps {
 
 export class Button extends Component<ButtonProps> {
     constructor({ className, children, onclick, disable }: ButtonProps) {
-        super({ className, children, onclick, disable }, Handlebars.compile(`<button class="{{{ className }}}{{#if disable }} button-disabled{{/if}}">{{{ children }}}</button>`));
+        super({ className, children, onclick, disable }, Handlebars.compile(
+            `<button class="{{{ className }}}{{#if disable }} button-disabled{{/if}}">{{{ children }}}</button>`));
     }
 }

@@ -50,13 +50,19 @@ export class HTTPTransport {
 
         let newData = null;
 
-        if (response.data) {
+        if (response?.data) {
             newData = await response.data.json();
         }
 
-        if (response && !newData) {
-            newData = await response.json();
+        try {
+            if (!newData) {
+                newData = await response?.json();
+            }
+        } catch {
+            newData = response?.ok;
         }
+
+        console.log({ status, data: newData, response });
 
         return { status, data: newData, response };
     };

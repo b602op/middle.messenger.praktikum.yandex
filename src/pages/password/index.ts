@@ -13,7 +13,7 @@ export class PasswordPage extends Component {
                     children: "изменение пароля",
                     tag: "h1"
                 }),
-                new PasswordForm({ value: { newPassword: null, password: null }, errors: { newPassword: null, password: null }, newPassword2: null }),
+                new PasswordForm({}),
                 new Button({
                     onclick: this.handleCancel.bind(this),
                     children: "назад",

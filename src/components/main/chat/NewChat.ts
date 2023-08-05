@@ -1,7 +1,8 @@
 import { controller } from "../../../controllers";
 import { Component } from "../../../core";
+import store from "../../../core/Store";
 import { withStore } from "../../../core/Store/hook";
-import { Container, ContainerRow } from "../../blocks/container";
+import { ContainerRow } from "../../blocks/container";
 import { Button } from "../../buttons";
 import { Input } from "../../inputs";
 
@@ -25,29 +26,35 @@ export class NewChat extends Component<NewChatProps> {
                         name: "title",
                         placeholder: "имя для нового чата",
                         className: "chat-input",
-                        onChange: this.handleChange.bind(this)
+                        onkeypress: this.handleChange.bind(this),
+                        onchange: this.handleChange.bind(this)
                     }),
                     new Button({
                         children: "+",
                         onclick: this.handleAdd.bind(this),
-                        className: "button-min",
-                        disable: !this.props.title
+                        className: "button-min"
                     })
                 ],
             className: "underline-container"
         });
     }
 
+    protected title = this.props.title;
+
     protected handleChange(event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        this.setProps({ title: target.value || "" });
+        this.title = target.value;
     }
 
     protected handleAdd(): void {
-        if (!this.props.title) return;
+        if (!this.title) return;
 
-        controller.createChat(this.props.title);
+        controller.createChat(this.title, {
+            good: () => {
+                store.set("loading.createChats", false);
+            }
+        });
     }
 }
 

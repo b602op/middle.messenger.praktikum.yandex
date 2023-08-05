@@ -30,11 +30,7 @@ export interface UserFormFields {
     login: Value;
     second_name: Value;
     email: Value;
-    login: Value;
-    // firstName: Value;
-    // displayName: Value;
-    // secondName: Value;
     phone: Value;
-    password: Value;
+    password?: Value;
     password2?: Value;
 };

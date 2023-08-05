@@ -5,11 +5,17 @@ import { ContainerRow } from "../../blocks/container";
 import { ImageMin } from "../../blocks/image";
 import { Button } from "../../buttons";
 
+export interface UserInformation {
+    avatar?: string | null;
+    display_name?: string | null;
+    first_name?: string | null;
+    id?: number | null;
+    login?: string | null;
+    role?: string | null;
+    second_name?: string | null;
+};
 interface UserBlockProps {
-    avatar: string;
-    login: string;
-    role: string;
-    id: number;
+    value?: UserInformation;
     removeUser: (value: Omit<IRemoveUsersFromChatData, "chatId">) => void;
     // display_name: string;
     // first_name: string;
@@ -18,21 +24,23 @@ interface UserBlockProps {
 };
 
 export class UserBlock extends Component<UserBlockProps> {
-    constructor({ avatar, login, role, removeUser, id }: UserBlockProps) {
-        super({ avatar, login, role, removeUser, id });
+    constructor({ value, removeUser }: UserBlockProps) {
+        super({ value, removeUser });
     }
+
+    protected defaultUser: UserInformation = this.props.value ?? {};
 
     protected render(): Component | Component[] {
         return new ContainerRow({
             children: [
                 new ImageMin({
-                    value: this.props?.avatar || ""
+                    value: this.props.value?.avatar
                 }),
                 new Info({
                     tag: "span",
-                    children: this.props?.login || "",
+                    children: this.props.value?.display_name ?? this.props.value?.login,
                     className: "user-block-login",
-                    title: this.props?.role === "admin" ? "администатор чата" : "участник чата"
+                    title: this.props.value?.role === "admin" ? "администатор чата" : "участник чата"
                 }),
                 new Button({
                     children: "🗑",
@@ -41,12 +49,14 @@ export class UserBlock extends Component<UserBlockProps> {
                 })
 
             ],
-            className: `user-block-container${this.props?.role === "admin" ? " user-block-admin" : ""}`
+            className: `user-block-container${this.props.value?.role === "admin" ? " user-block-admin" : ""}`
         });
     }
 
     protected handleDeleteUser(): void {
-        this.props.removeUser({ users: [this.props.id] });
+        if (!this.defaultUser.id) return;
+
+        this.props.removeUser({ users: [this.defaultUser.id] });
     }
 }
 

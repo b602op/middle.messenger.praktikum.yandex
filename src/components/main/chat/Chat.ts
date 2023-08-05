@@ -41,11 +41,8 @@ class Chat extends Component<ChatProps> {
 }
 
 export default withStore(state => {
-    console.log(state);
     return {
         value: (state.messages ?? []).map((props) => {
-            console.log(props, " props");
-
             const { content, user_id: userId } = props;
 
             return ({

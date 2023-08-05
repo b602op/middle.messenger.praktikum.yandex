@@ -1,5 +1,6 @@
 import { controller } from "../../../controllers";
 import { Component } from "../../../core";
+import store from "../../../core/Store";
 import { withStore } from "../../../core/Store/hook";
 import { Info } from "../../blocks/Info";
 import { ContainerColumn, ContainerRow } from "../../blocks/container";
@@ -11,12 +12,55 @@ interface SearchUserProps {
     login?: string;
     loading?: string;
     activeChatId?: number;
-    userSearch: any[];
+    userSearch?: any[];
 };
 
 export class SearchUser extends Component<SearchUserProps> {
     constructor({ login, loading, activeChatId, userSearch }: SearchUserProps) {
         super({ login, loading, activeChatId, userSearch });
+    }
+
+    protected getSearchUser(): Component[] {
+        const currentUsers = this.props.userSearch;
+
+        if (!currentUsers) return [];
+        if (!currentUsers.length) {
+            return [
+                new Info({
+                    children: "ничего не найдено",
+                    tag: "span"
+                })
+            ];
+        };
+
+        const callback = ({ login, id, avatar }: { avatar: string; login: string; id: string }): Component => {
+            return new ContainerRow({
+                children: [
+                    new ImageMin({
+                        value: avatar
+                    }),
+                    new Info({
+                        tag: "span",
+                        children: `${login} id: ${id}`
+                    }),
+                    new Button({
+                        children: "+",
+                        className: "button-min",
+                        onclick: this.handleAdd.bind(this, id)
+                    })
+                ]
+            });
+        };
+
+        const result = [
+            new Button({
+                children: "скрыть",
+                onclick: this.removeSearchUserFromStore.bind(this)
+            }),
+            ...currentUsers.map(callback)
+        ];
+
+        return result;
     }
 
     protected render(): Component | Component[] {
@@ -32,13 +76,13 @@ export class SearchUser extends Component<SearchUserProps> {
                                     name: "title",
                                     placeholder: "поиск пользователя",
                                     className: "chat-input",
-                                    onChange: this.handleChange.bind(this)
+                                    onkeypress: this.handleChange.bind(this),
+                                    onchange: this.handleChange.bind(this)
                                 }),
                                 new Button({
                                     children: "🔍",
                                     onclick: this.handleSearch.bind(this),
-                                    className: "button-min",
-                                    disable: !this.props.login
+                                    className: "button-min"
                                 })
                             ]
                     })
@@ -46,43 +90,25 @@ export class SearchUser extends Component<SearchUserProps> {
                         tag: "span",
                         children: "выберите чат"
                     }),
-                ...this.props.userSearch.map(({ login, id, avatar }: { avatar: string; login: string; id: string }) => {
-                    return new ContainerRow({
-                        children: [
-                            new ImageMin({
-                                value: avatar
-                            }),
-                            new Info({
-                                tag: "span",
-                                children: `${login} id: ${id}`
-                            }),
-                            new Button({
-                                children: "+",
-                                className: "button-min",
-                                onclick: this.handleAdd.bind(this, id)
-                            })
-                        ]
-                    });
-                }),
-                this.props.userSearch.length === 0
-                    ? null
-                    : new Button({
-                        children: "скрыть"
-                    })
+                ...this.getSearchUser()
             ]
         });
     }
 
+    public login = this.props.login;
+
     protected handleChange(event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        this.setProps({ ...this.props, login: target.value || "" });
+        this.login = target.value;
     }
 
     protected handleSearch(): void {
-        if (!this.props.login) return;
+        if (!this.login) return;
 
-        controller.searchUser(this.props.login);
+        controller.searchUser(this.login);
+
+        this.setProps({ ...this.props, login: this.login });
     }
 
     protected handleAdd(id: number): void {
@@ -90,15 +116,24 @@ export class SearchUser extends Component<SearchUserProps> {
 
         if (currentActiveChatId) {
             controller.addUserInChat({ users: [id], chatId: currentActiveChatId },
-                () => { controller.getChatUser(currentActiveChatId, true); });
+                { good: () => { controller.getChatUser(currentActiveChatId, true); } }
+            );
         }
+    }
+
+    protected removeSearchUserFromStore(): void {
+        store.set("userSearch", null);
     }
 }
 
 export default withStore(state => {
-    const { activeChatId, userSearch = [], userList } = state;
+    const { activeChatId, userSearch, userList } = state;
 
     let currentUserSearch = [];
+
+    if (!userSearch) {
+        return { activeChatId, userSearch };
+    }
 
     if (userList && activeChatId && userList[activeChatId]) {
         const arr = userList[activeChatId].map(({ id: id2 }) => id2);

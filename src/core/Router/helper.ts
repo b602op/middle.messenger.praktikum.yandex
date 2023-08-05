@@ -47,5 +47,5 @@ export const redirectRote = ({ routes, path, render }: PropsType): void => {
         }
     };
 
-    controller.getUser(callback);
+    controller.getUser({ good: callback });
 };

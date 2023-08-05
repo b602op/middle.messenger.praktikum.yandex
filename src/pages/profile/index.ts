@@ -52,7 +52,7 @@ export class ProfilePage extends Component {
 
         store.clearStore();
 
-        controller.logout(() => { Router.go(RouterPath.default); });
+        controller.logout({ good: () => { Router.go(RouterPath.default); } });
     }
 
     private handleToChangePassword(event: SubmitEvent): void {

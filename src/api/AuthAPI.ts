@@ -119,6 +119,10 @@ export class UserAPI extends API {
     async changeProfile<T>(data: any): Promise<IResponse<T>> {
         return await this.http.put("/profile", data);
     }
+
+    async changePassword<T>(data: any): Promise<IResponse<T>> {
+        return await this.http.put("/password", data);
+    }
 };
 
 export const isChatsTokenRequestData = (value: unknown): value is { id: number } => (
