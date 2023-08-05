@@ -1,8 +1,9 @@
 import { Info } from "../../components/blocks/Info";
-import { Container } from "../../components/blocks/container";
+import { Container, ContainerColumn } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
+import { MessageForm } from "../../components/forms";
 import { AvatarIcon, UserList, ChatsList } from "../../components/main";
-import Chat from "../../components/main/chat/Chat";
+import MessageList from "../../components/main/massage";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
 import Router from "../../core/Router";
@@ -20,12 +21,15 @@ export class ChatPage extends Component {
                     children: [
                         new ChatsList({}),
                         new UserList({}),
-                        new Chat({
-                            value: []
+                        new ContainerColumn({
+                            children: [
+                                new MessageList({}),
+                                new MessageForm({})
+                            ],
+                            className: "chat chat-items"
                         }),
-                        new AvatarIcon({
-                            children: "Иван Иванов Иванович"
-                        })
+
+                        new AvatarIcon({})
                     ],
                     className: "chat-content"
                 }),

@@ -16,11 +16,15 @@ export class MessageForm extends Component<MessageFormProps> {
         super({ text, activeChatId });
     }
 
+    protected defaultText = {
+        text: this.props.text
+    };
+
     protected render(): Component | Component[] {
         return new Container({
             children: [
                 new Input({
-                    value: this.props.text ?? "",
+                    value: "",
                     name: "message",
                     placeholder: "новое сообщение",
                     className: "chat-input",
@@ -42,24 +46,27 @@ export class MessageForm extends Component<MessageFormProps> {
 
         const target = event.target as HTMLInputElement;
 
-        this.setProps({ text: target.value ?? "" });
+        this.defaultText.text = target.value;
     }
 
     protected handlePressKey(props: any): void {
-        const { key } = props;
+        const { key, target } = props;
+
+        this.defaultText.text = target.value;
 
         if (key === "Enter") {
             this.sendMassage();
-            this.setProps({ text: "" });
         }
     }
 
     private sendMassage(): void {
-        const message = this.props.text;
+        const message = this.defaultText.text;
 
-        if (message) {
-            socket.sendMessage(message);
-        }
+        if (!message) return;
+
+        this.setProps({ text: message });
+
+        socket.sendMessage(message);
     }
 }
 

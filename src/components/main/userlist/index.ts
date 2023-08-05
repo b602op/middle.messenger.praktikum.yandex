@@ -18,22 +18,24 @@ class UserList extends Component<ChatProps> {
         super({ value, activeChatId });
     }
 
-    protected getUsers(): Component[] {
+    protected getUsers(): null | Component {
         if (!this.props.value?.length || !this.props.activeChatId) {
-            return [];
+            return null;
         }
 
         const users = this.props.value.map((value: UserInformation) => (
             new UserBlock({ value, removeUser: this.handleRemoveUser.bind(this) })
         ));
 
-        return [
-            new Info({
-                tag: "span",
-                children: `пользователи ЧАТА - id:${this.props.activeChatId}`
-            }),
-            ...users
-        ];
+        return new ContainerColumn({
+            children: [
+                new Info({
+                    tag: "span",
+                    children: `пользователи ЧАТА - id:${this.props.activeChatId}`
+                }),
+                ...users
+            ]
+        });
     }
 
     protected render(): Component | Component[] {
@@ -43,7 +45,7 @@ class UserList extends Component<ChatProps> {
                     children: new SearchUser({}),
                     className: "underline-container"
                 }),
-                ...this.getUsers()
+                this.getUsers()
             ],
             className: "chat"
         });

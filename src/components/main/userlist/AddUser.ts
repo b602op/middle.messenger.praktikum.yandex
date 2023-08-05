@@ -63,33 +63,39 @@ export class SearchUser extends Component<SearchUserProps> {
         return result;
     }
 
+    protected getSearchPanel(): null | Component {
+        if (!this.props.activeChatId) {
+            return new Info({
+                tag: "span",
+                children: "выберите чат"
+            });
+        }
+
+        if (this.props.loading) return null;
+
+        return new ContainerRow({
+            children: [
+                new Input({
+                    value: this.props.login ?? "",
+                    name: "title",
+                    placeholder: "поиск пользователя",
+                    className: "chat-input",
+                    onkeypress: this.handleChange.bind(this),
+                    onchange: this.handleChange.bind(this)
+                }),
+                new Button({
+                    children: "🔍",
+                    onclick: this.handleSearch.bind(this),
+                    className: "button-min"
+                })
+            ]
+        });
+    }
+
     protected render(): Component | Component[] {
         return new ContainerColumn({
             children: [
-                this.props.activeChatId
-                    ? new ContainerRow({
-                        children: this.props.loading
-                            ? null
-                            : [
-                                new Input({
-                                    value: this.props.login ?? "",
-                                    name: "title",
-                                    placeholder: "поиск пользователя",
-                                    className: "chat-input",
-                                    onkeypress: this.handleChange.bind(this),
-                                    onchange: this.handleChange.bind(this)
-                                }),
-                                new Button({
-                                    children: "🔍",
-                                    onclick: this.handleSearch.bind(this),
-                                    className: "button-min"
-                                })
-                            ]
-                    })
-                    : new Info({
-                        tag: "span",
-                        children: "выберите чат"
-                    }),
+                this.getSearchPanel(),
                 ...this.getSearchUser()
             ]
         });
