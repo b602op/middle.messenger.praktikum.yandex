@@ -180,7 +180,8 @@ export class RegistrationForm extends Component<RegistrationFormProps> {
                 controller.getUser({
                     good: () => { Router.go(RouterPath.profile); }
                 });
-            }
+            },
+            bad: () => { Router.go(RouterPath.authorization); }
         };
 
         const callbacks = {
