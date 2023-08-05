@@ -4,11 +4,11 @@ import { Info } from "../../blocks/Info";
 import { ContainerColumn } from "../../blocks/container";
 
 interface MessageListProps extends IComponentProps {
-    value: Array<{
+    value?: Array<{
         message: string;
         self: boolean;
         author: string;
-    }>;
+    }> | null;
 };
 
 class MessageList extends Component<MessageListProps> {
@@ -54,8 +54,12 @@ class MessageList extends Component<MessageListProps> {
 export default withStore(state => {
     const { user, messages = [], userList, activeChatId } = state;
 
+    if (!activeChatId) {
+        return { value: null };
+    }
+
     return {
-        value: messages.map((props) => {
+        value: messages?.map((props) => {
             const { content, user_id: userId } = props;
 
             let author = `id${userId}`;
