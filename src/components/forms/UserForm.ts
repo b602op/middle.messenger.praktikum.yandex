@@ -41,6 +41,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.login ?? "",
                     name: "login",
                     onkeypress: this.handleOnKeyPress.bind(this, "login"),
+                    onchange: this.handleOnKeyPress.bind(this, "login"),
                     placeholder: "Логин",
                     error: this.props.errors?.login
                 }),
@@ -49,6 +50,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.first_name ?? "",
                     name: "name",
                     onkeypress: this.handleOnKeyPress.bind(this, "first_name"),
+                    onchange: this.handleOnKeyPress.bind(this, "first_name"),
                     placeholder: "Имя",
                     error: this.props.errors?.first_name
                 }),
@@ -57,6 +59,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.display_name ?? "",
                     name: "display_name",
                     onkeypress: this.handleOnKeyPress.bind(this, "display_name"),
+                    onchange: this.handleOnKeyPress.bind(this, "display_name"),
                     placeholder: "Имя в чате",
                     error: this.props.errors?.display_name
                 }),
@@ -65,6 +68,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.email ?? "",
                     name: "email",
                     onkeypress: this.handleOnKeyPress.bind(this, "email"),
+                    onchange: this.handleOnKeyPress.bind(this, "email"),
                     placeholder: "Почта",
                     error: this.props.errors?.email
                 }),
@@ -73,6 +77,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.second_name ?? "",
                     name: "second_name",
                     onkeypress: this.handleOnKeyPress.bind(this, "secondName"),
+                    onchange: this.handleOnKeyPress.bind(this, "secondName"),
                     placeholder: "Фамилия",
                     error: this.props.errors?.second_name
                 }),
@@ -81,6 +86,7 @@ class UserForm extends Component<UserFormProps> {
                     value: this.props.value.phone ?? "",
                     name: "phone",
                     onkeypress: this.handleOnKeyPress.bind(this, "phone"),
+                    onchange: this.handleOnKeyPress.bind(this, "phone"),
                     placeholder: "Телефон",
                     error: this.props.errors?.phone
                 }),
@@ -92,18 +98,16 @@ class UserForm extends Component<UserFormProps> {
         });
     }
 
-    public defaultValue: UserFormFields = {
-        avatar: this.props.value.avatar ?? null,
+    public defaultValue: Omit<UserFormFields, "id" | "avatar"> = {
         display_name: this.props.value.display_name ?? null,
         first_name: this.props.value.first_name ?? null,
-        id: this.props.value.id ?? null,
         login: this.props.value.login ?? null,
         second_name: this.props.value.second_name ?? null,
         email: this.props.value.email ?? null,
         phone: this.props.value.phone ?? null
     };
 
-    protected handleOnKeyPress(key: keyof UserFormFields, event: InputEvent): void {
+    protected handleOnKeyPress(key: keyof Omit<UserFormFields, "id" | "avatar">, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
         this.defaultValue[key] = target.value;
@@ -114,7 +118,7 @@ class UserForm extends Component<UserFormProps> {
 
         const keys: FieldType[] = Object.keys(this.defaultValue) as Array<keyof UserFormFields>;
 
-        const { newErrors, success, newValue } = validationFields<UserFormFields>(keys, this.defaultValue);
+        const { newErrors, success, newValue } = validationFields<Omit<UserFormFields, "id" | "avatar">>(keys, this.defaultValue);
 
         if (success) {
             const profileData: Omit<UserFormFields, "id" | "avatar" | "password"> = {
@@ -126,7 +130,15 @@ class UserForm extends Component<UserFormProps> {
                 login: newValue.login ?? ""
             };
 
-            controller.changeProfile(profileData);
+            controller.changeProfile(profileData, {
+                good: () => { alert("успешно сохранили"); },
+                bad: () => { alert("не получилось сохранить"); }
+            });
+
+            this.setProps({
+                ...this.props,
+                errors: newErrors
+            });
 
             return;
         }

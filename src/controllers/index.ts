@@ -84,12 +84,14 @@ class AuthController {
             .finally(() => { store.set("loading.chats", false); });
     }
 
-    public changeProfile(data: Omit<UserFormFields, "id" | "avatar" | "password">): void {
+    public changeProfile(data: Omit<UserFormFields, "id" | "avatar" | "password">, callbacks: CallbackTypes): void {
         this.apiUser.changeProfile(data)
             .then((answer) => {
                 const { data, status } = answer;
                 if (status === 200) {
                     store.set("user", data);
+
+                    if (callbacks?.good) callbacks?.good();
                 }
             })
             .catch((problems: any) => { console.error("запрос на юзера не отработал: ", problems); })
