@@ -29,8 +29,6 @@ class MessageList extends Component<MessageListProps> {
         }
 
         const massageList = messages.map((props) => {
-            console.log(props);
-
             const { message, self, author } = props;
 
             const className = self ? "massage-item-self" : "massage-item-no-self";
@@ -56,11 +54,8 @@ class MessageList extends Component<MessageListProps> {
 export default withStore(state => {
     const { user, messages = [], userList, activeChatId } = state;
 
-    console.log(state, " state");
-
     return {
         value: messages.map((props) => {
-            console.log(props, " props");
             const { content, user_id: userId } = props;
 
             let author = `id${userId}`;
