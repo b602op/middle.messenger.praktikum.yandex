@@ -4,12 +4,20 @@ import { withStore } from "../../../core/Store/hook";
 import { Component, type IComponentProps } from "../../../core/component";
 import socket from "../../../core/socket";
 import { Info } from "../../blocks/Info";
-import { Container, ContainerRow } from "../../blocks/container";
+import { Container, ContainerColumn, ContainerRow } from "../../blocks/container";
+import { ImageMin } from "../../blocks/image";
 import { Button } from "../../buttons";
 import { NewChat } from "./NewChat";
 
+const defaultAvatarChat = "/345362ce-dd10-412e-a348-4daefa5bd42e/25b0e090-dbdc-4e39-8a25-9eae4e7e5a55_181548.png";
+
 interface ChatProps extends IComponentProps {
-    value?: Array<{ id: string | null; title: string | null }>;
+    value?: Array<{
+        id?: number | null;
+        title?: string | null;
+        avatar?: string | null;
+        unread_count?: number | null;
+    }>;
     activeId?: number | null;
 };
 
@@ -26,6 +34,59 @@ class ChatList extends Component<ChatProps> {
         super({ value });
     }
 
+    protected getChats(): Component | null {
+        const chats = this.props.value;
+
+        if (!chats) {
+            return null;
+        }
+
+        const currentChats = chats.map(({
+            id, title, unread_count: unreadMessageCount, avatar
+        }) => {
+            const className = Number(id) === this.props.activeId ? "user-chat-item" : "user-chat-item-active";
+
+            const infoUnreadMessage = unreadMessageCount
+                ? (
+                    new Info({
+                        children: `Не прочитанных: ${unreadMessageCount}`,
+                        tag: "span"
+                    })
+                )
+                : null;
+
+            const infoChat = new ContainerRow({
+                children: [
+                    new ImageMin({
+                        value: avatar,
+                        defaultValue: defaultAvatarChat
+                    }),
+                    new Button({
+                        children: `${title ?? "-"} id:${id ?? "-"}`,
+                        className,
+                        onclick: this.handleChange.bind(this, id)
+                    }),
+                    new Button({
+                        children: "🗑",
+                        className: "delete-button",
+                        onclick: this.handleRemoveChat.bind(this, id)
+                    })
+                ]
+            });
+
+            return new ContainerColumn({
+                children: [
+                    infoUnreadMessage,
+                    infoChat
+                ]
+            });
+        });
+
+        return new ContainerColumn({
+            children: currentChats
+        });
+    }
+
     protected render(): Component | Component[] {
         return new Container({
             children: [
@@ -36,26 +97,7 @@ class ChatList extends Component<ChatProps> {
                             children: "чаты"
                         }),
                         new NewChat({}),
-                        ...((this.props.value ?? []).map(({
-                            id, title
-                        }) => {
-                            const className = Number(id) === this.props.activeId ? "user-chat-item" : "user-chat-item-active";
-
-                            return new ContainerRow({
-                                children: [
-                                    new Button({
-                                        children: `${title ?? "-"} id:${id ?? "-"}`,
-                                        className,
-                                        onclick: this.handleChange.bind(this, id)
-                                    }),
-                                    new Button({
-                                        children: "🗑",
-                                        className: "delete-button",
-                                        onclick: this.handleRemoveChat.bind(this, id)
-                                    })
-                                ]
-                            });
-                        })),
+                        this.getChats(),
                         new Button({
                             children: `обновить чаты`,
                             onclick: this.handleUpdateChatList.bind(this)
@@ -80,10 +122,21 @@ class ChatList extends Component<ChatProps> {
         socket.connect(newActiveId);
     }
 
-    protected handleRemoveChat(newActiveId: number, event: InputEvent): void {
+    protected handleRemoveChat(deleteActiveId: number, event: InputEvent): void {
         event.preventDefault();
 
-        controller.removeChat(newActiveId);
+        const callbacks = {
+            good: () => {
+                if (deleteActiveId === this.props.activeId) store.set("activeChatId", null);
+
+                this.setProps({
+                    ...this.props,
+                    value: this.props.value?.filter(({ id }) => id !== deleteActiveId)
+                });
+            }
+        };
+
+        controller.removeChat(deleteActiveId, callbacks);
     }
 
     protected handleUpdateChatList(): void {

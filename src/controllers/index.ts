@@ -98,12 +98,14 @@ class AuthController {
             .finally(() => { store.set("loading.chats", false); });
     }
 
-    public removeChat(chatId: number): void {
+    public removeChat(chatId: number, callbacks?: CallbackTypes): void {
         this.apiChat.removeChat({ chatId })
-            .then(({ status }) => {
-                if (status === 200) {
-                    const { chats = [] } = store.getState();
-                    store.set("chats", [...chats].filter(({ id }) => id !== chatId));
+            .then((answerRemoveChat) => {
+                console.log(answerRemoveChat, answerRemoveChat.data, " answerRemoveChat>?");
+                if (answerRemoveChat.status === 200) {
+                    if (callbacks?.good) callbacks.good();
+                //     const { chats = [] } = store.getState();
+                //     store.set("chats", [...chats].filter(({ id }) => id !== chatId));
                 }
             })
             .catch(problems => { console.error("запрос на юзера не отработал: ", problems); })
