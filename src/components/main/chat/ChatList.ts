@@ -14,6 +14,14 @@ interface ChatProps extends IComponentProps {
 };
 
 class ChatList extends Component<ChatProps> {
+    protected componentDidMount(): void {
+        if (this.props.value === undefined) {
+            store.set("chats", null);
+            store.set("activeChatId", null);
+            controller.getChats();
+        }
+    }
+
     constructor({ value }: ChatProps) {
         super({ value });
     }
@@ -89,5 +97,7 @@ class ChatList extends Component<ChatProps> {
 }
 
 export default withStore((state: any) => {
-    return { value: state.chats || [] };
+    const { chats } = state;
+
+    return { value: chats };
 })(ChatList);

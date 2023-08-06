@@ -3,7 +3,7 @@ import { Container, ContainerColumn } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
 import { MessageForm } from "../../components/forms";
 import { AvatarIcon, UserList, ChatsList } from "../../components/main";
-import MessageList from "../../components/main/massage";
+import MessageList from "../../components/main/message";
 import { Page } from "../../components/main/page";
 import { Component } from "../../core";
 import Router from "../../core/Router";

@@ -28,10 +28,10 @@ class MessageList extends Component<MessageListProps> {
             );
         }
 
-        const massageList = messages.map((props) => {
+        const messageList = messages.map((props) => {
             const { message, self, author } = props;
 
-            const className = self ? "massage-item-self" : "massage-item-no-self";
+            const className = self ? "message-item-self" : "message-item-no-self";
 
             return new Info({
                 tag: "span",
@@ -40,13 +40,13 @@ class MessageList extends Component<MessageListProps> {
             });
         });
 
-        return massageList;
+        return messageList;
     }
 
     protected render(): Component | Component[] {
         return new ContainerColumn({
             children: this.getMassages(),
-            className: "massage-list"
+            className: "message-list"
         });
     }
 }

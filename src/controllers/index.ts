@@ -183,12 +183,12 @@ class AuthController {
     public removeUserFromChat(removeData: IRemoveUsersFromChatData, callbacks?: CallbackTypes): void {
         this.apiChat.removeUserFromChat(removeData)
             .then(({ status, data }) => {
-                // if (status === 200) {
-                //     store.set("userList", { ...test, [activeChatId]: data });
-                // }
+                if (status === 200) {
+                    if (callbacks?.good) callbacks.good();
+                }
             })
             .catch((error) => { if (callbacks?.bad) callbacks.bad(error); })
-            .finally(() => { if (callbacks?.good) callbacks.good(); });
+            .finally(() => {});
     }
 
     public getToken(data: { id: number }): void {

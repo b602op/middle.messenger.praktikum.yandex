@@ -57,11 +57,19 @@ class UserList extends Component<ChatProps> {
         controller.getChats();
     }
 
-    protected handleRemoveUser(users: Omit<IRemoveUsersFromChatData, "chatId">): void {
+    protected handleRemoveUser(newData: Omit<IRemoveUsersFromChatData, "chatId">): void {
         if (this.props.activeChatId) {
-            const data: IRemoveUsersFromChatData = { ...users, chatId: this.props.activeChatId };
+            const data: IRemoveUsersFromChatData = { ...newData, chatId: this.props.activeChatId };
 
-            controller.removeUserFromChat(data);
+            controller.removeUserFromChat(data, {
+                good: () => {
+                    const { value } = this.props;
+
+                    const id = newData.users[0];
+
+                    this.setProps({ ...this.props, value: value.filter(({ id: currentId }) => currentId !== id) });
+                }
+            });
         }
     }
 }

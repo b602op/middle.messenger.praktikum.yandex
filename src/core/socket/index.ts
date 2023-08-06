@@ -69,7 +69,14 @@ export class Socket {
                     this._isConnected = false;
                 });
                 this._socket.addEventListener("message", event => {
-                    const data = JSON.parse(event.data);
+                    let data;
+                    try {
+                        data = JSON.parse(event.data);
+                    } catch {
+                        console.log(event.data);
+                        return;
+                    }
+
                     if (data.type === "message") {
                         const { messages = [] } = store.getState();
 
