@@ -1,23 +1,24 @@
-import { Component } from "../core";
+import { controller } from "../../controllers";
+import { Component, type IComponentProps } from "../../core/component";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { type IComponentProps } from "../core/component";
-import { validationValue } from "./helpers";
+import { type AvatarFormFields } from "./types";
+
 export interface AvatarFormProps extends IComponentProps {
-    avatar: string | null;
-    errors: Record<string, string | null>;
+    value: AvatarFormFields;
+    errors?: Partial<AvatarFormFields>;
+    file?: any;
 }
 
 export class AvatarForm extends Component<AvatarFormProps> {
     constructor({
-        avatar
+        value, errors, file
     }: AvatarFormProps) {
         super({
-            avatar,
-            errors: {
-                avatar: null
-            }
+            value,
+            errors,
+            file
         });
     }
 
@@ -26,42 +27,50 @@ export class AvatarForm extends Component<AvatarFormProps> {
             method: FormMethod.post,
             children: [
                 new Input({
-                    children: "ссылка на аватарку",
-                    value: this.props.avatar ?? "",
+                    children: "загрузите файл с аватаркой",
+                    value: this.props.value.avatar ?? "",
                     name: "avatar",
-                    onChange: this.handleChange.bind(this),
+                    onchange: this.handleChange.bind(this, "avatar"),
                     placeholder: "url",
-                    error: this.props.errors.avatar
+                    error: this.props.errors?.avatar,
+                    type: "file"
                 }),
                 new Button({
                     children: "отправить",
-                    onclick: this.handleFormSubmit.bind(this)
+                    onclick: this.handleFormSubmit.bind(this),
+                    disable: !this.props.file
                 })
             ]
         });
     }
 
-    protected handleChange(event: InputEvent): void {
+    protected handleChange(key: keyof AvatarFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        this.setProps({
-            ...this.props,
-            avatar: target.value
-        });
+        const fileItem = target.files?.item(0);
+
+        if (fileItem) {
+            const file = new FormData();
+
+            file.append("avatar", fileItem);
+
+            this.setProps({
+                ...this.props,
+                file
+            });
+        }
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const [isError, currentValue] = validationValue(this.props.avatar ?? "", "avatar");
+        if (this.props.file) {
+            controller.setAvatar(this.props.file);
 
-        if (isError) {
-            this.setProps({ ...this.props, errors: { ...this.props.errors, avatar: currentValue } });
-            return;
+            this.setProps({
+                ...this.props,
+                file: null
+            });
         }
-
-        this.setProps({ ...this.props, errors: { ...this.props.errors, avatar: null } });
-
-        console.log(currentValue, " - Avatar Data");
     }
 }

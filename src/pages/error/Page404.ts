@@ -1,6 +1,8 @@
-import { Component, Page } from "../../components/core";
 import { Button } from "../../components/buttons";
 import { Info } from "../../components/blocks/Info";
+import { Component } from "../../core";
+import { Page } from "../../components/main/page";
+import Router from "../../core/Router";
 
 export class Page404 extends Component {
     protected render(): Component | Component[] {
@@ -11,7 +13,7 @@ export class Page404 extends Component {
                     children: "404"
                 }),
                 new Button({
-                    onclick: () => { window.location.href = "/"; },
+                    onclick: () => { Router.back(); },
                     children: "назад",
                     className: "back"
                 })

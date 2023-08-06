@@ -1,12 +1,13 @@
+import Router, { RouterPath } from "../../../core/Router";
+import { withStore } from "../../../core/Store/hook";
+import { Component, type IComponentProps } from "../../../core/component";
 import { Button } from "../../buttons";
-import { Component } from "../../core";
-import { type IComponentProps } from "../../core/component";
 
 interface ChatProps extends IComponentProps {
     href?: string;
 };
 
-export class AvatarIcon extends Component<ChatProps> {
+class AvatarIcon extends Component<ChatProps> {
     constructor({ href, children }: ChatProps) {
         super({ href, children });
     }
@@ -22,6 +23,10 @@ export class AvatarIcon extends Component<ChatProps> {
     private handleToProfile(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = this.props.href ?? "/";
+        Router.go(RouterPath.profile);
     }
 }
+
+export default withStore((state: any) => {
+    return { children: state.user?.first_name || "" };
+})(AvatarIcon);

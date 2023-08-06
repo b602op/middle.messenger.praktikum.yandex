@@ -1,48 +1,81 @@
-import { Container } from "../../blocks/container";
-import { Button } from "../../buttons";
-import { Component } from "../../core";
-import { type IComponentProps } from "../../core/component";
+import { type IRemoveUsersFromChatData } from "../../../api/AuthAPI";
+import { controller } from "../../../controllers";
+import store from "../../../core/Store";
+import { withStore } from "../../../core/Store/hook";
+import { Component, type IComponentProps } from "../../../core/component";
+import { Info } from "../../blocks/Info";
+import { Container, ContainerColumn } from "../../blocks/container";
+import SearchUser from "./AddUser";
+import UserBlock, { type UserInformation } from "./UserBlock";
 
 interface ChatProps extends IComponentProps {
-    value: Array<{
-        name: string;
-        imageUrl: string;
-        active: boolean;
-    }>;
+    value: UserInformation[];
+    activeChatId: number | null;
 };
 
-export class UserList extends Component<ChatProps> {
-    constructor({ value }: ChatProps) {
-        super({ value });
+class UserList extends Component<ChatProps> {
+    constructor({ value, activeChatId }: ChatProps) {
+        super({ value, activeChatId });
+    }
+
+    protected getUsers(): null | Component {
+        if (!this.props.value?.length || !this.props.activeChatId) {
+            return null;
+        }
+
+        const users = this.props.value.map((value: UserInformation) => (
+            new UserBlock({ value, removeUser: this.handleRemoveUser.bind(this) })
+        ));
+
+        return new ContainerColumn({
+            children: [
+                new Info({
+                    tag: "span",
+                    children: `пользователи ЧАТА - id:${this.props.activeChatId}`
+                }),
+                ...users
+            ]
+        });
     }
 
     protected render(): Component | Component[] {
         return new Container({
             children: [
-                new Container({
-                    children: [
-                        ...this.props.value.map(({ name, imageUrl, active }) => {
-                            const className = active ? "user-chat-item-active" : "user-chat-item";
-
-                            return new Button({
-                                children: name,
-                                className,
-                                onclick: this.handleChange.bind(this, name)
-                            });
-                        })
-                    ],
-                    className: "user-chat-items"
-                })
+                new ContainerColumn({
+                    children: new SearchUser({}),
+                    className: "underline-container"
+                }),
+                this.getUsers()
             ],
             className: "chat"
         });
     }
 
-    protected handleChange(newNameActive: string, event: InputEvent): void {
-        event.preventDefault();
+    protected handleUpdateUserList(): void {
+        store.set("chats", null);
 
-        const newValue = this.props.value.map((item) => ({ ...item, active: item.name === newNameActive }));
+        controller.getChats();
+    }
 
-        this.setProps({ value: newValue });
+    protected handleRemoveUser(newData: Omit<IRemoveUsersFromChatData, "chatId">): void {
+        if (this.props.activeChatId) {
+            const data: IRemoveUsersFromChatData = { ...newData, chatId: this.props.activeChatId };
+
+            controller.removeUserFromChat(data, {
+                good: () => {
+                    const { value } = this.props;
+
+                    const id = newData.users[0];
+
+                    this.setProps({ ...this.props, value: value.filter(({ id: currentId }) => currentId !== id) });
+                }
+            });
+        }
     }
 }
+
+export default withStore((state: any) => {
+    const { activeChatId, userList } = state;
+
+    return { value: userList ? userList[activeChatId] : [], activeChatId: activeChatId || null };
+})(UserList);

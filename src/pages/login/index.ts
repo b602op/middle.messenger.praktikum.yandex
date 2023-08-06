@@ -1,7 +1,9 @@
 import { Info } from "../../components/blocks/Info";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { AuthorizationForm } from "../../components/forms/AuthorizationForm";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
+import Router, { RouterPath } from "../../core/Router";
 
 export class LoginPage extends Component {
     protected render(): Component | Component[] {
@@ -11,7 +13,19 @@ export class LoginPage extends Component {
                     children: "авторизация",
                     tag: "h1"
                 }),
-                new AuthorizationForm({ value: { login: null, password: null } }),
+                new Info({
+                    children: "для тестирования",
+                    tag: "span"
+                }),
+                new Info({
+                    children: "Login: edik159",
+                    tag: "span"
+                }),
+                new Info({
+                    children: "pass: PORNOv11",
+                    tag: "span"
+                }),
+                new AuthorizationForm({}),
                 new Button({
                     onclick: this.handleToRegistration.bind(this),
                     children: "регистрация"
@@ -28,12 +42,12 @@ export class LoginPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        Router.back();
     }
 
     private handleToRegistration(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/registration";
+        Router.go(RouterPath.registration);
     }
 }

@@ -1,6 +1,8 @@
 import { Nav, NavLink } from "../../components/blocks";
 import { Info } from "../../components/blocks/Info";
-import { Component, Page } from "../../components/core";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
+import { RouterPath } from "../../core/Router";
 
 export class NavigationPage extends Component {
     protected render(): Component | Component[] {
@@ -12,27 +14,27 @@ export class NavigationPage extends Component {
                         tag: "h1"
                     }),
                     new NavLink({
-                        href: "/login",
+                        href: RouterPath.authorization,
                         children: "Авторизация"
                     }),
                     new NavLink({
-                        href: "/registration",
+                        href: RouterPath.registration,
                         children: "Регистрация"
                     }),
                     new NavLink({
-                        href: "/chat",
+                        href: RouterPath.chat,
                         children: "Страница чата"
                     }),
                     new NavLink({
-                        href: "/profile",
+                        href: RouterPath.profile,
                         children: "Профиль пользователя"
                     }),
                     new NavLink({
-                        href: "/404",
+                        href: RouterPath.page404,
                         children: "Ошибка 404"
                     }),
                     new NavLink({
-                        href: "/500",
+                        href: RouterPath.page500,
                         children: "Ошибка 500"
                     })
                 ]

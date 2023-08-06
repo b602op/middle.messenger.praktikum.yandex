@@ -1,11 +1,6 @@
-import { type RegistrationFormFields } from "../RegistrationForm";
-import { type MessageFormProps } from "../MessageForm";
-import { type PasswordFormFields } from "../PasswordForm";
-import { type AvatarFormProps } from "../AvatarForm";
+import { type FieldType } from "../types";
 
-type FieldType = keyof RegistrationFormFields | keyof MessageFormProps | keyof PasswordFormFields | keyof AvatarFormProps;
-
-type validationValueType = (value: string | null, type: FieldType) => [boolean, string | null];
+interface Result<T> { newValue: Partial<T>; newErrors: Partial<T>; success: boolean };
 
 const emailReg = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
 
@@ -13,10 +8,14 @@ const passReg = /^(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z]).*$/;
 
 const phoneReg = /^([+][0-9\s-\\(\\)]{10,15})*$/i;
 
-export const validationValue: validationValueType = (value, type) => {
+const validateValue = ({ type, value }: { type: FieldType; value: string | null | undefined }): [boolean, string] => {
     switch (type) {
-        case "firstName":
-        case "secondName": {
+        case "id": {
+            return [false, value ?? ""];
+        }
+        // case "firstName":
+        // case "secondName":
+        case "display_name": {
             if (!value) return [true, "заполните поле"];
 
             const firstLatter = value[0];
@@ -41,6 +40,7 @@ export const validationValue: validationValueType = (value, type) => {
 
             return [true, "Введите корректный e-mail"];
         }
+        case "password2":
         case "newPassword":
         case "password": {
             if (!value) return [true, "заполните поле"];
@@ -73,13 +73,52 @@ export const validationValue: validationValueType = (value, type) => {
             if (!value) return [true, "укажите ссылку на аватар"];
             return [false, value];
         }
-        case "displayName": {
-            if (!value) return [true, "укажите имя в чате"];
+        // case "displayName": {
+        //     if (!value) return [true, "укажите имя в чате"];
 
-            return [false, value];
-        }
+        //     return [false, value];
+        // }
         default: {
-            return [false, value];
+            return [false, "поле без валидации"];
         }
     }
+};
+
+export const validationFields = <T extends Partial<Record<FieldType, string | null>>>(keys: FieldType | FieldType[], value: T): Result<T> => {
+    const newValue: T = { ...value };
+    let newErrors: Partial<T> = {};
+
+    const currentKeys = Array.isArray(keys) ? keys : [keys];
+
+    currentKeys.forEach((key) => {
+        if (key === "password2" && newValue.password2) {
+            const isError = newValue.password2 === newValue.password;
+
+            newErrors = isError
+                ? newErrors
+                : {
+                    ...newErrors,
+                    password: "пароли не совпадают",
+                    password2: "пароли не совпадают"
+                };
+            return;
+        }
+
+        const [isError, textError] = validateValue({ type: key, value: newValue[key] });
+
+        if (isError) {
+            newErrors = { ...newErrors, [key]: textError };
+            return;
+        }
+
+        newErrors = { ...newErrors, [key]: null };
+    });
+
+    const success = !Object.values(newErrors).filter(Boolean).length;
+
+    return {
+        newValue,
+        newErrors,
+        success
+    };
 };

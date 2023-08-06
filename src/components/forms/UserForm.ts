@@ -1,40 +1,26 @@
-import { Component } from "../core";
+import { controller } from "../../controllers";
+import { withStore } from "../../core/Store/hook";
+import { Component, type IComponentProps } from "../../core/component";
+import { Image } from "../blocks";
+import { Info } from "../blocks/Info";
 import { Button } from "../buttons";
 import { Input } from "../inputs";
 import { Form, FormMethod } from "./Form";
-import { type IComponentProps } from "../core/component";
-import { validationValue } from "./helpers";
-
-interface UserFormFields {
-    email: string | null;
-    login: string | null;
-    firstName: string | null;
-    displayName: string | null;
-    secondName: string | null;
-    phone: string | null;
-    password: string | null;
-};
+import { validationFields } from "./helpers";
+import { type FieldType } from "./types";
+import { type UserFormFields } from "./types/fields";
 
 export interface UserFormProps extends IComponentProps {
-    value: UserFormFields;
-    errors: Record<keyof UserFormFields, string | null>;
+    value: Partial<UserFormFields>;
+    errors?: Partial<UserFormFields>;
 }
 
-export class UserForm extends Component<UserFormProps> {
+class UserForm extends Component<UserFormProps> {
     constructor({
-        value
+        errors, value
     }: UserFormProps) {
         super({
-            value,
-            errors: {
-                email: null,
-                login: null,
-                firstName: null,
-                displayName: null,
-                secondName: null,
-                phone: null,
-                password: null
-            }
+            errors, value
         });
     }
 
@@ -42,68 +28,67 @@ export class UserForm extends Component<UserFormProps> {
         return new Form({
             method: FormMethod.post,
             children: [
-                new Input({
-                    children: "Почта",
-                    value: this.props.value.email ?? "",
-                    name: "email",
-                    onChange: this.handleChange.bind(this, "email"),
-                    placeholder: "Почта",
-                    error: this.props.errors.email
+                new Image({
+                    value: this.props.value.avatar,
+                    title: "avatar"
+                }),
+                new Info({
+                    tag: "span",
+                    children: `id: ${this.props.value.id ?? "-"} `
                 }),
                 new Input({
                     children: "Логин",
                     value: this.props.value.login ?? "",
                     name: "login",
-                    onChange: this.handleChange.bind(this, "login"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "login"),
+                    onchange: this.handleOnKeyPress.bind(this, "login"),
                     placeholder: "Логин",
-                    error: this.props.errors.login
+                    error: this.props.errors?.login
                 }),
                 new Input({
                     children: "Имя",
-                    value: this.props.value.firstName ?? "",
+                    value: this.props.value.first_name ?? "",
                     name: "name",
-                    onChange: this.handleChange.bind(this, "firstName"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "first_name"),
+                    onchange: this.handleOnKeyPress.bind(this, "first_name"),
                     placeholder: "Имя",
-                    error: this.props.errors.firstName
+                    error: this.props.errors?.first_name
                 }),
                 new Input({
                     children: "Имя в чате",
-                    value: this.props.value.displayName ?? "",
+                    value: this.props.value.display_name ?? "",
                     name: "display_name",
-                    onChange: this.handleChange.bind(this, "displayName"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "display_name"),
+                    onchange: this.handleOnKeyPress.bind(this, "display_name"),
                     placeholder: "Имя в чате",
-                    error: this.props.errors.displayName
+                    error: this.props.errors?.display_name
+                }),
+                new Input({
+                    children: "Почта",
+                    value: this.props.value.email ?? "",
+                    name: "email",
+                    onkeypress: this.handleOnKeyPress.bind(this, "email"),
+                    onchange: this.handleOnKeyPress.bind(this, "email"),
+                    placeholder: "Почта",
+                    error: this.props.errors?.email
                 }),
                 new Input({
                     children: "Фамилия",
-                    value: this.props.value.secondName ?? "",
+                    value: this.props.value.second_name ?? "",
                     name: "second_name",
-                    onChange: this.handleChange.bind(this, "secondName"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "secondName"),
+                    onchange: this.handleOnKeyPress.bind(this, "secondName"),
                     placeholder: "Фамилия",
-                    error: this.props.errors.secondName
+                    error: this.props.errors?.second_name
                 }),
                 new Input({
                     children: "Телефон",
                     value: this.props.value.phone ?? "",
                     name: "phone",
-                    onChange: this.handleChange.bind(this, "phone"),
+                    onkeypress: this.handleOnKeyPress.bind(this, "phone"),
+                    onchange: this.handleOnKeyPress.bind(this, "phone"),
                     placeholder: "Телефон",
-                    error: this.props.errors.phone
-                }),
-                new Input({
-                    children: "Пароль",
-                    value: this.props.value.password ?? "",
-                    name: "password",
-                    onChange: this.handleChange.bind(this, "password"),
-                    placeholder: "Пароль",
-                    error: this.props.errors.password
-                }),
-                new Input({
-                    children: "Пароль(ещё раз)",
-                    value: "",
-                    name: "password2",
-                    onChange: this.handleCheck.bind(this),
-                    placeholder: "Пароль"
+                    error: this.props.errors?.phone
                 }),
                 new Button({
                     children: "изменить данные",
@@ -113,57 +98,74 @@ export class UserForm extends Component<UserFormProps> {
         });
     }
 
-    protected handleCheck(event: InputEvent): void {
+    public defaultValue: Omit<UserFormFields, "id" | "avatar"> = {
+        display_name: this.props.value.display_name ?? null,
+        first_name: this.props.value.first_name ?? null,
+        login: this.props.value.login ?? null,
+        second_name: this.props.value.second_name ?? null,
+        email: this.props.value.email ?? null,
+        phone: this.props.value.phone ?? null
+    };
+
+    protected handleOnKeyPress(key: keyof Omit<UserFormFields, "id" | "avatar">, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
-        if (target.value === this.props.value.password) return;
-
-        target.value = "";
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, password: null },
-            errors: { ...this.props.errors, password: "повторный пароль не совпадает" }
-        });
-    }
-
-    protected handleChange(key: keyof UserFormFields, event: InputEvent): void {
-        const target = event.target as HTMLInputElement;
-
-        const [isError, currentValue] = validationValue(target.value, key);
-
-        if (isError) {
-            this.setProps({
-                ...this.props,
-                value: { ...this.props.value, [key]: null },
-                errors: { ...this.props.errors, [key]: currentValue }
-            });
-
-            return;
-        }
-
-        this.setProps({
-            ...this.props,
-            value: { ...this.props.value, [key]: target.value }
-        });
+        this.defaultValue[key] = target.value;
     }
 
     private handleFormSubmit(event: SubmitEvent): void {
         event.preventDefault();
 
-        const newErrors = { ...this.props.errors };
+        const keys: FieldType[] = Object.keys(this.defaultValue) as Array<keyof UserFormFields>;
 
-        Object.keys(this.props.errors).forEach((currentKey: keyof UserFormFields) => {
-            const [isError, value] = validationValue(this.props.errors[currentKey] ?? "", currentKey);
+        const { newErrors, success, newValue } = validationFields<Omit<UserFormFields, "id" | "avatar">>(keys, this.defaultValue);
 
-            newErrors[currentKey] = isError ? value : null;
-        });
+        if (success) {
+            const profileData: Omit<UserFormFields, "id" | "avatar" | "password"> = {
+                first_name: newValue.first_name ?? "",
+                second_name: newValue.second_name ?? "",
+                display_name: newValue.display_name ?? "",
+                email: newValue.email ?? "",
+                phone: newValue.phone ?? "",
+                login: newValue.login ?? ""
+            };
+
+            controller.changeProfile(profileData, {
+                good: () => { alert("успешно сохранили"); },
+                bad: () => { alert("не получилось сохранить"); }
+            });
+        }
 
         this.setProps({
             ...this.props,
+            value: newValue,
             errors: newErrors
         });
-
-        console.log(this.props.value, " - User Data");
     }
 }
+
+export default withStore((state) => {
+    const {
+        avatar = null,
+        display_name: displayName = null,
+        first_name: firstName = null,
+        id = null,
+        login = null,
+        second_name: secondName = null,
+        email = null,
+        phone = null
+    } = state.user ?? {};
+
+    return {
+        value: {
+            avatar,
+            display_name: displayName,
+            first_name: firstName,
+            id,
+            login,
+            second_name: secondName,
+            email,
+            phone
+        }
+    };
+})(UserForm);

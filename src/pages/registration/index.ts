@@ -1,7 +1,9 @@
 import { Info } from "../../components/blocks/Info";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { RegistrationForm } from "../../components/forms/RegistrationForm";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
+import Router, { RouterPath } from "../../core/Router";
 
 export class RegistrationPage extends Component {
     protected render(): Component | Component[] {
@@ -11,16 +13,7 @@ export class RegistrationPage extends Component {
                     children: "форма регистрации",
                     tag: "h1"
                 }),
-                new RegistrationForm({
-                    value: {
-                        email: null,
-                        login: null,
-                        name: null,
-                        second_name: null,
-                        phone: null,
-                        password: null
-                    }
-                }),
+                new RegistrationForm({}),
                 new Button({
                     onclick: this.handleCancel.bind(this),
                     children: "назад",
@@ -33,6 +26,6 @@ export class RegistrationPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        Router.go(RouterPath.authorization);
     }
 }

@@ -1,7 +1,5 @@
 import Handlebars from "handlebars";
-
-import { Component } from "../../core";
-import { type IComponentProps } from "../../core/component";
+import { Component, type IComponentProps } from "../../../core/component";
 
 interface NavLinkProps extends IComponentProps {
     id?: string;

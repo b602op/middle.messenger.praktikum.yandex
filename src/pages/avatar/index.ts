@@ -1,13 +1,17 @@
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
 import { AvatarForm } from "../../components/forms";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
+import Router from "../../core/Router";
 
 export class AvatarPage extends Component {
     protected render(): Component | Component[] {
         return new Page({
             children: [
                 new AvatarForm({
-                    avatar: null
+                    value: {
+                        avatar: null
+                    }
                 }),
                 new Button({
                     onclick: this.handleCancel.bind(this),
@@ -20,6 +24,6 @@ export class AvatarPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/profile";
+        Router.back();
     }
 }

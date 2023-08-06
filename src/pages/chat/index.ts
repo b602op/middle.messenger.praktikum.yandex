@@ -1,43 +1,35 @@
 import { Info } from "../../components/blocks/Info";
-import { Container } from "../../components/blocks/container";
+import { Container, ContainerColumn } from "../../components/blocks/container";
 import { Button } from "../../components/buttons";
-import { Component, Page } from "../../components/core";
-import { AvatarIcon, UserList } from "../../components/main";
-import { Chat } from "../../components/main/chat/Chat";
+import { MessageForm } from "../../components/forms";
+import { AvatarIcon, UserList, ChatsList } from "../../components/main";
+import MessageList from "../../components/main/message";
+import { Page } from "../../components/main/page";
+import { Component } from "../../core";
+import Router from "../../core/Router";
 
 export class ChatPage extends Component {
     protected render(): Component | Component[] {
         return new Page({
             children: [
                 new Info({
-                    children: "страница чата",
+                    children: "страница чатов",
                     tag: "h1"
                 }),
 
                 new Container({
                     children: [
-                        new UserList({
-                            value: [{ name: "Петя Петров Петрович", imageUrl: "", active: true }, { name: "Саша Сашов Сашович", imageUrl: "", active: false }, { name: "Вася Васов Весович", imageUrl: "", active: false }]
+                        new ChatsList({}),
+                        new UserList({}),
+                        new ContainerColumn({
+                            children: [
+                                new MessageList({}),
+                                new MessageForm({})
+                            ],
+                            className: "chat chat-items"
                         }),
-                        new Chat({
-                            value: [{
-                                massage: "привет, Иван",
-                                self: false
-                            }, {
-                                massage: "привет, Петя",
-                                self: true
-                            }, {
-                                massage: "пока, Иван",
-                                self: false
-                            }, {
-                                massage: "давай пока, Петя",
-                                self: true
-                            }]
-                        }),
-                        new AvatarIcon({
-                            href: "/profile/",
-                            children: "Иван Иванов Иванович"
-                        })
+
+                        new AvatarIcon({})
                     ],
                     className: "chat-content"
                 }),
@@ -54,6 +46,6 @@ export class ChatPage extends Component {
     private handleCancel(event: SubmitEvent): void {
         event.preventDefault();
 
-        window.location.href = "/";
+        Router.back();
     }
 }
