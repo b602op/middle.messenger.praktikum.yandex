@@ -7,7 +7,7 @@ export interface IResponse<T = unknown> {
     data: T;
 }
 
-interface CallbackTypes { good?: () => void; bad?: (value?: any) => void };
+interface CallbackTypes { good?: () => void; bad?: (value?: unknown) => void };
 
 class AuthController {
     private readonly api = new AuthAPI();
@@ -94,7 +94,7 @@ class AuthController {
                     if (callbacks?.good) callbacks?.good();
                 }
             })
-            .catch((problems: any) => { console.error("запрос на юзера не отработал: ", problems); })
+            .catch((problems: unknown) => { console.error("запрос на юзера не отработал: ", problems); })
             .finally(() => { store.set("loading.chats", false); });
     }
 

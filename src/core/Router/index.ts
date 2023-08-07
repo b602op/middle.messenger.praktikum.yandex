@@ -1,4 +1,3 @@
-import store from "../Store";
 import { type Component } from "../component";
 import { redirectRote } from "./helper";
 
