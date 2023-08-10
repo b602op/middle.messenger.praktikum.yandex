@@ -8,6 +8,7 @@
     "build": "parcel build ./src/index.html",
     "test": "npx mocha",
     "eslint": "npx eslint .",
+    "pre-commit": "npm run test",
     "stylelint": "npx stylelint \"**/*.pcss\""
   },
   "keywords": [],
