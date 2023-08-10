@@ -31,29 +31,40 @@ export enum RouterPath {
     password = "/password",
 }
 
-class Route {
-    private block: Component | null = null;
+export class Route<P extends Record<string, any> = any> {
+    protected readonly _ComponentClass: typeof Component<P>;
+    protected readonly _props: { rootQuery: string };
+    protected _component: Component<P> | null;
+    protected _pathname: string;
 
-    constructor(
-        private readonly pathname: string,
-        private readonly BlockClass: typeof Component,
-        private readonly query: string) {
+    constructor(pathname: string, ComponentClass: typeof Component<P>, props: IRouteProps) {
+        this._pathname = pathname;
+        this._ComponentClass = ComponentClass;
+        this._component = null;
+        this._props = props;
     }
 
-    leave(): undefined {
-        this.block = null;
+    navigate(pathname: string): void {
+        if (this.match(pathname)) {
+            this.render();
+        }
+    }
+
+    leave(): void {
+        this._component?.hide(this._props.rootQuery);
     }
 
     match(pathname: string): boolean {
-        return isEqual(pathname, this.pathname);
+        return isEqual(pathname, this._pathname);
     }
 
-    render(): undefined {
-        if (!this.block) {
-            this.block = new this.BlockClass({});
-
-            render(this.query, this.block);
+    render(): void {
+        if (!this._component) {
+            this._component = new this._ComponentClass();
+            render(this._props.rootQuery, this._component);
+            return;
         }
+        this._component.show(this._props.rootQuery);
     }
 }
 

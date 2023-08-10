@@ -102,7 +102,7 @@ export class HTTPTransport {
         });
     }
 
-    private async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
+    public async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
         const { method, data, type, headers } = options;
 
         const defaultOptions: RequestInit = {

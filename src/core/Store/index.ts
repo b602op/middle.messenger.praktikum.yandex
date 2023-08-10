@@ -1,4 +1,5 @@
 import { type IUser } from "../../api/AuthAPI";
+import { cloneDeep } from "../component";
 import { EventBus } from "../eventbus";
 import { set } from "../utils";
 
@@ -53,20 +54,17 @@ export enum StorageEvent {
     UpdateState = "update",
 }
 
-class Store extends EventBus {
-    private readonly state: State = {};
+export class Store extends EventBus {
+    protected readonly _state: TState = {};
 
-    getState(): State {
-        return this.state;
+    public getState(): TState {
+        return cloneDeep(this._state);
     }
 
-    set(path: string, value: unknown): void {
-        const currentState = this.getState();
-
-        set(currentState, path, value);
-
-        if (typeof this.listeners[StorageEvent.UpdateState] !== "undefined") {
-            this.emit(StorageEvent.UpdateState, currentState);
+    public set(path: string, value: unknown): void {
+        set(this._state, path, value);
+        if (typeof this._listeners[StorageEvent.UpdateState] !== "undefined") {
+            this.emit(StorageEvent.UpdateState);
         }
     }
 

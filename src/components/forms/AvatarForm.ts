@@ -47,6 +47,8 @@ export class AvatarForm extends Component<AvatarFormProps> {
     protected handleChange(key: keyof AvatarFormFields, event: InputEvent): void {
         const target = event.target as HTMLInputElement;
 
+        console.log(key, " key");
+
         const fileItem = target.files?.item(0);
 
         if (fileItem) {
