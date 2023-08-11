@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "npx webpack serve --open --config webpack.dev.js",
-    "start": "npx webpack --config webpack.prod.js",
+    "start": "npm run build && node ./server.js",
     "build": "npx webpack --config webpack.prod.js",
     "test": "npx mocha",
     "eslint": "npx eslint .",
