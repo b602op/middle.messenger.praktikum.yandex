@@ -24,6 +24,7 @@
     "@types/uuid": "9.0.1",
     "@typescript-eslint/eslint-plugin": "5.59.8",
     "@typescript-eslint/parser": "5.59.8",
+    "ajv": "^8.12.0",
     "chai": "^4.3.7",
     "css-loader": "^6.8.1",
     "eslint": "8.41.0",
@@ -53,7 +54,7 @@
     "typescript": "5.0.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "ajv": "^8.12.0",
+    "express-history-api-fallback": "^2.2.1",
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
