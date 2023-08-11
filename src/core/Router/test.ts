@@ -55,7 +55,7 @@ describe("Route class tests", () => {
 
     it("should set props when initialized", () => {
         const MockedRoute = class extends Route {
-            get props(): IRouteProps {
+            get props(): any {
                 return this._props;
             }
         };
@@ -147,7 +147,7 @@ describe("Route class tests", () => {
                 hide = mockedHideMethod;
             };
             const MockedRoute = class extends Route {
-                constructor(pathname: string, ComponentClass: typeof Component, props: IRouteProps) {
+                constructor(pathname: string, ComponentClass: typeof Component, props: any) {
                     super(pathname, ComponentClass, props);
                     this._component = new ComponentClass();
                 }

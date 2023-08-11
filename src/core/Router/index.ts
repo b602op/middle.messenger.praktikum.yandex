@@ -1,23 +1,20 @@
 import { type Component } from "../component";
 import { redirectRote } from "./helper";
 
+interface IRouteProps {
+    rootQuery: string;
+}
+
 function isEqual(lhs: string, rhs: string): boolean {
     return lhs === rhs;
 }
 
-function render(query: string, block: Component): Element {
+export const render = (query: string, block: Component): Element | null => {
     const root = document.querySelector(query);
-
-    if (root === null) {
-        throw new Error(`root not found by selector "${query}"`);
-    }
-
-    root.innerHTML = "";
-
-    root.append(block.getContent());
-
+    console.log(root, query, ' root? ')
+    root?.replaceWith(block.getContent());
     return root;
-}
+};
 
 export enum RouterPath {
     authorization = "/",
@@ -33,7 +30,7 @@ export enum RouterPath {
 
 export class Route<P extends Record<string, any> = any> {
     protected readonly _ComponentClass: typeof Component<P>;
-    protected readonly _props: { rootQuery: string };
+    protected readonly _props: IRouteProps;
     protected _component: Component<P> | null;
     protected _pathname: string;
 
@@ -71,26 +68,28 @@ export class Route<P extends Record<string, any> = any> {
 export type TypeRoute = Route;
 
 export class Router {
-    private static __instance: Router;
-    private readonly routes: Route[] = [];
-    private currentRoute: Route | null = null;
-    private readonly history = window.history;
+    protected static _instance: Router | null;
+    protected _rootQuery: string;
+    protected _currentRoute: Route | null;
+    protected _routes: Route[];
+    protected _history: History;
 
-    constructor(private readonly rootQuery: string) {
-        if (Router.__instance) {
-            return Router.__instance;
+    constructor(rootQuery: string) {
+        if (Router._instance) {
+            return Router._instance;
         }
 
-        this.routes = [];
+        this._rootQuery = rootQuery;
+        this._currentRoute = null;
+        this._routes = [];
+        this._history = window.history;
 
-        Router.__instance = this;
+        Router._instance = this;
     }
 
     public use(pathname: RouterPath, block: typeof Component): this {
-        const route = new Route(pathname, block, this.rootQuery);
-
-        this.routes.push(route);
-
+        const route = new Route(pathname, block, { rootQuery: this._rootQuery });
+        this._routes.push(route);
         return this;
     }
 
@@ -107,34 +106,34 @@ export class Router {
     private _onRoute(pathname: RouterPath): void {
         const route = this.getRoute(pathname);
 
-        if (this.currentRoute && this.currentRoute !== route) {
-            this.currentRoute.leave();
+        if (this._currentRoute && this._currentRoute !== route) {
+            this._currentRoute.leave();
         }
 
         const currentRender = (redirectRote: Route): void => {
-            this.currentRoute = redirectRote;
+            this._currentRoute = redirectRote;
             redirectRote.render();
         };
 
-        redirectRote({ routes: this.routes, path: pathname, render: currentRender });
+        redirectRote({ routes: this._routes, path: pathname, render: currentRender });
     }
 
     public go(pathname: RouterPath): void {
-        this.history.pushState({}, "", pathname);
+        this._history.pushState({}, "", pathname);
 
         this._onRoute(pathname);
     }
 
     public back(): void {
-        this.history.back();
+        this._history.back();
     }
 
     public forward(): void {
-        this.history.forward();
+        this._history.forward();
     }
 
     private getRoute(pathname: RouterPath): Route | undefined {
-        return this.routes.find((Route) => Route.match(pathname));
+        return this._routes.find((Route) => Route.match(pathname));
     }
 }
 
