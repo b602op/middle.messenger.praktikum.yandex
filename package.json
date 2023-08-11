@@ -36,7 +36,7 @@
     "express-history-api-fallback": "^2.2.1",
     "filemanager-webpack-plugin": "^8.0.0",
     "html-webpack-plugin": "^5.5.3",
-    "husky": "^8.0.3",
+    "husky": "^2.2.0",
     "jsdom": "^22.1.0",
     "mini-css-extract-plugin": "^2.7.6",
     "mocha": "^10.2.0",
