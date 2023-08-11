@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@anikin/parcel-transformer-handlebars": "1.0.9",
+    "@anikin/parcel-transformer-handlebars": "^1.0.2",
     "@anikin/parcel-transformer-handlebars-precompile": "1.0.1",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
@@ -33,6 +33,7 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-n": "15.7.0",
     "eslint-plugin-promise": "6.1.1",
+    "express-history-api-fallback": "^2.2.1",
     "filemanager-webpack-plugin": "^8.0.0",
     "html-webpack-plugin": "^5.5.3",
     "husky": "^8.0.3",
@@ -54,7 +55,6 @@
     "typescript": "5.0.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "express-history-api-fallback": "^2.2.1",
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
