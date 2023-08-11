@@ -11,7 +11,6 @@ function isEqual(lhs: string, rhs: string): boolean {
 
 export const render = (query: string, block: Component): Element | null => {
     const root = document.querySelector(query);
-    console.log(root, query, ' root? ')
     root?.replaceWith(block.getContent());
     return root;
 };
