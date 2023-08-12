@@ -8,7 +8,7 @@
     "build": "npx webpack --config webpack.prod.js",
     "test": "npx mocha",
     "eslint": "npx eslint .",
-    "pre-commit": "npm run test",
+    "pre-commit": "npm run test && npm run eslint",
     "stylelint": "npx stylelint \"**/*.pcss\""
   },
   "keywords": [],

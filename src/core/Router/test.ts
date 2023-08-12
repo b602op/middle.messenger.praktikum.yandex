@@ -2,7 +2,7 @@ import * as proxyquire from "proxyquire";
 import * as sinon from "sinon";
 import { assert } from "chai";
 import { Component } from "../component";
-import { Route } from '.'
+import { Route } from ".";
 
 describe("Route class tests", () => {
     it("should set pathname when initialized", () => {

@@ -7,7 +7,6 @@ import { EventBus } from "../eventbus";
 
 export const identity = <T>(value: T): T => value;
 
-
 export const cloneDeep = <T>(value: T): T | T[] | Record<string | number | symbol, T> => {
     if (value && typeof value === "object" && !(value instanceof Component)) {
         if (Array.isArray(value)) {
@@ -430,4 +429,3 @@ export class Component<P extends Record<string, any> = any> {
         this.__template.content.append(element);
     }
 }
-

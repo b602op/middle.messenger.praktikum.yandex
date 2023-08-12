@@ -21,14 +21,14 @@ interface Options {
 
 type IData = Record<string, string>;
 
-function queryStringify(data: IData) {
-    if (typeof data !== 'object') {
-        throw new Error('Data must be object');
+function queryStringify(data: IData): string {
+    if (typeof data !== "object") {
+        throw new Error("Data must be object");
     }
 
     const keys = Object.keys(data);
 
-    return keys.reduce((result, key, index) => `${result}${key}=${data[key]}${index < keys.length - 1 ? '&' : ''}`, '?');
+    return keys.reduce((result, key, index) => `${result}${key}=${data[key]}${index < keys.length - 1 ? "&" : ""}`, "?");
 }
 
 export class HTTPTransport {
@@ -109,11 +109,13 @@ export class HTTPTransport {
     // }
 
     public async delete<Response>(path: string, data?: unknown, type?: TypeRequest): Promise<Response> {
-        return await this._request(this.endpoint + path, {
+        const result = await this._request(this.endpoint + path, {
             method: Method.Delete,
             data,
             type
         });
+
+        return result;
     }
 
     public async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
@@ -160,44 +162,44 @@ export class HTTPTransport {
         return test;
     }
 
-    private xmlRequest<Response>(url: string, options: Options = { method: Method.Get }): Promise<Response> {
+    private async xmlRequest<Response>(url: string, options: Options = { method: Method.Get }): Promise<Response> {
         const { method, data } = options;
-    
-        return new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-    
-          const isGet = method === Method.Get;
-          xhr.open(method, isGet && !!data ? `${url}${queryStringify(data)}` : url);
-          // xhr.open(method, url);
-    
-          xhr.onreadystatechange = () => {
-            if (xhr.readyState !== 4) {
-              return;
+
+        return await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+
+            const isGet = method === Method.Get;
+            xhr.open(method, isGet && !!data ? `${url}${queryStringify(data)}` : url);
+            // xhr.open(method, url);
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (xhr.status < 400) {
+                    resolve(xhr.response);
+                } else {
+                    reject(xhr.response);
+                }
+            };
+
+            xhr.onabort = () => {};
+            xhr.onerror = () => {};
+            xhr.ontimeout = () => {};
+
+            if (!(data instanceof FormData)) {
+                xhr.setRequestHeader("Content-Type", "application/json");
             }
-            if (xhr.status < 400) {
-              resolve(xhr.response);
+
+            xhr.withCredentials = true;
+            xhr.responseType = "json";
+
+            if (method === Method.Get || !data) {
+                xhr.send();
             } else {
-              reject(xhr.response);
+                const body = data instanceof FormData ? data : JSON.stringify(data);
+                xhr.send(body);
             }
-          };
-    
-          xhr.onabort = () => reject({ reason: 'abort' });
-          xhr.onerror = () => reject({ reason: 'network error' });
-          xhr.ontimeout = () => reject({ reason: 'timeout' });
-    
-          if (!(data instanceof FormData)) {
-            xhr.setRequestHeader('Content-Type', 'application/json');
-          }
-    
-          xhr.withCredentials = true;
-          xhr.responseType = 'json';
-    
-          if (method === Method.Get || !data) {
-            xhr.send();
-          } else {
-            const body = data instanceof FormData ? data : JSON.stringify(data);
-            xhr.send(body);
-          }
         });
-      }
+    }
 }
