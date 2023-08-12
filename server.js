@@ -1,16 +1,13 @@
 const express = require("express");
+const fallback = require("express-history-api-fallback");
 
 const app = express();
 const port = 3000;
+const root = __dirname + "/dist";
 
-app.use("/", express.static(__dirname + "/dist"));
-app.use("/settings", express.static(__dirname + "/dist"));
-app.use("/chat", express.static(__dirname + "/dist"));
-app.use("/login", express.static(__dirname + "/dist"));
-app.use("/sign-up", express.static(__dirname + "/dist"));
-app.use("/404", express.static(__dirname + "/dist"));
-app.use("/500", express.static(__dirname + "/dist"));
+app.use(express.static(root));
+app.use(fallback("index.html", { root }));
 
 app.listen(port, () => {
-    console.info('Server started')
+    console.log('Server started')
 });

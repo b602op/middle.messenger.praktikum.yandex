@@ -1,0 +1,6 @@
+/.parcel-cache
+/dist
+/node_modules
+webpack.dev.js
+webpack.common.js
+webpack.prod.js

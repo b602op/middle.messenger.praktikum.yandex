@@ -10,6 +10,7 @@ import {
     PasswordPage,
     AvatarPage
 } from "./pages";
+import "./styles.pcss";
 
 export type TPage =
     | LoginPage

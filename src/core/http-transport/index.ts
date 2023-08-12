@@ -19,16 +19,30 @@ interface Options {
     headers?: any;
 }
 
+type IData = Record<string, string>;
+
+function queryStringify(data: IData): string {
+    if (typeof data !== "object") {
+        throw new Error("Data must be object");
+    }
+
+    const keys = Object.keys(data);
+
+    return keys.reduce((result, key, index) => `${result}${key}=${data[key]}${index < keys.length - 1 ? "&" : ""}`, "?");
+}
+
 export class HTTPTransport {
     static API_URL = "https://ya-praktikum.tech/api/v2";
     protected endpoint: string;
+    protected _request: any = () => {};
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, isXMLHttpRequest?: boolean) {
         this.endpoint = `${HTTPTransport.API_URL}${endpoint}`;
+        this._request = isXMLHttpRequest ? this.xmlRequest : this.request;
     }
 
     get = async<T>(path = "/", data?: unknown): Promise<{ status: number; data: T; response: Response }> => {
-        const response = await this.request(this.endpoint + path, data as any);
+        const response = await this._request(this.endpoint + path, data as any);
 
         const responseData = await response.json();
 
@@ -38,7 +52,7 @@ export class HTTPTransport {
     };
 
     post = async<T>(path: string, data?: unknown): Promise<{ status: number; data: T; response: Response }> => {
-        const response = await this.request(this.endpoint + path, {
+        const response = await this._request(this.endpoint + path, {
             method: Method.Post,
             data,
             headers: {
@@ -66,7 +80,7 @@ export class HTTPTransport {
     };
 
     put = async<T>(path: string, data: unknown, type?: TypeRequest): Promise<{ status: number; data: T; response: Response }> => {
-        const response = await this.request(this.endpoint + path, {
+        const response = await this._request(this.endpoint + path, {
             method: Method.Put,
             data,
             type
@@ -88,21 +102,23 @@ export class HTTPTransport {
     };
 
     // public async patch<Response = void>(path: string, data: unknown): Promise<Response> {
-    //     return await this.request<Response>(this.endpoint + path, {
+    //     return await this._request<Response>(this.endpoint + path, {
     //         method: Method.Patch,
     //         data
     //     });
     // }
 
     public async delete<Response>(path: string, data?: unknown, type?: TypeRequest): Promise<Response> {
-        return await this.request(this.endpoint + path, {
+        const result = await this._request(this.endpoint + path, {
             method: Method.Delete,
             data,
             type
         });
+
+        return result;
     }
 
-    private async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
+    public async request(url: string, options: Options = { method: Method.Get }): Promise<any> {
         const { method, data, type, headers } = options;
 
         const defaultOptions: RequestInit = {
@@ -144,5 +160,46 @@ export class HTTPTransport {
         });
 
         return test;
+    }
+
+    private async xmlRequest<Response>(url: string, options: Options = { method: Method.Get }): Promise<Response> {
+        const { method, data } = options;
+
+        return await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+
+            const isGet = method === Method.Get;
+            xhr.open(method, isGet && !!data ? `${url}${queryStringify(data)}` : url);
+            // xhr.open(method, url);
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (xhr.status < 400) {
+                    resolve(xhr.response);
+                } else {
+                    reject(xhr.response);
+                }
+            };
+
+            xhr.onabort = () => {};
+            xhr.onerror = () => {};
+            xhr.ontimeout = () => {};
+
+            if (!(data instanceof FormData)) {
+                xhr.setRequestHeader("Content-Type", "application/json");
+            }
+
+            xhr.withCredentials = true;
+            xhr.responseType = "json";
+
+            if (method === Method.Get || !data) {
+                xhr.send();
+            } else {
+                const body = data instanceof FormData ? data : JSON.stringify(data);
+                xhr.send(body);
+            }
+        });
     }
 }
