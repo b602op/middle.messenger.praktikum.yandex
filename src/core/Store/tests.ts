@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { merge, set } from "../utils";
 import { Store, StorageEvent } from ".";
-import Sinon from "sinon";
+import * as sinon from "sinon";
 
 describe("merge function tests", () => {
     it("should merge nested objects", () => {
@@ -133,7 +133,7 @@ describe("Store class tests", () => {
                 };
             }
 
-            emit = Sinon.fake();
+            emit = sinon.fake();
 
             getState() {
                 return this._state;

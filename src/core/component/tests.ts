@@ -1,13 +1,13 @@
 import 'mocha';
-import proxyquire from "proxyquire";
-import Sinon from "sinon";
+import * as proxyquire from "proxyquire";
+import * as sinon from "sinon";
 import { assert } from "chai";
 import { ComponentEvent } from "./types";
 import { cloneDeep } from '.';
 
 const eventBusMock = {
-    on: Sinon.fake(),
-    emit: Sinon.fake()
+    on: sinon.fake(),
+    emit: sinon.fake()
 };
 
 const { Component } = proxyquire(".", {

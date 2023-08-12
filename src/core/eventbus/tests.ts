@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { EventBus, TEventListener } from "."
-import Sinon from "sinon";
+import * as sinon from "sinon";
 
 describe("EventBus tests", () => {
     it("should has empty listeners when initialized", () => {
@@ -33,7 +33,7 @@ describe("EventBus tests", () => {
 
     it("should event listener be called once when called emit() method", () => {
         const event: string = "someEvent";
-        const listener = Sinon.fake();
+        const listener = sinon.fake();
         const EventBusMock = class extends EventBus {
             constructor() {
                 super();

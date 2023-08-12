@@ -7,8 +7,8 @@
       "noUnusedParameters": true,
       "sourceMap": true,
       "strictNullChecks": true,
-      "typeRoots": ["./src/types"],
-      "esModuleInterop": true,
+      // "typeRoots": ["./src/types"],
+      // "esModuleInterop": true,
       "allowSyntheticDefaultImports": true
   },
   "include": ["./src/*"]
